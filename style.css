@@ -155,3 +155,10 @@ table.rule th { background: var(--surface); }
 .pm-modal h2.pm-lose { color: var(--danger); }
 .pm-line { font-size: 15px; margin: 4px 0; color: #4a463e; }
 .pm-btns { display: flex; gap: 8px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+
+/* 모바일 길게 누르기 시 텍스트 선택/돋보기 메뉴 방지 (게임 보드) */
+#grid, #grid *, #board, #board *, #stage, #stage *, #omok, #numpad, #numpad * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
