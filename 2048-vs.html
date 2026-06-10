@@ -10,9 +10,9 @@
 <meta name="naver-site-verification" content="c453a63eb21eed7ee1bade214294b2e5b7919832" />
 <meta name="google-adsense-account" content="ca-pub-6840959424010586">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840959424010586" crossorigin="anonymous"></script>
-<title>2048 게임 무료 — 설치 없이 바로 하기 | 퍼즐마루</title>
-<meta name="description" content="2048 퍼즐 게임을 브라우저에서 무료로. 방향키나 스와이프로 타일을 밀어 같은 숫자를 합치고 2048을 만들어 보세요. 최고 점수 자동 저장.">
-<link rel="canonical" href="https://puzzlemaru.xyz/2048.html">
+<title>2048 대결 — AI와 번갈아 두는 2048 | 퍼즐마루</title>
+<meta name="description" content="퍼즐마루 오리지널 2048 대결. 한 보드에서 AI와 한 수씩 번갈아 두고, 합친 점수로 승부합니다. 상대 이득까지 계산하는 AI를 이겨보세요.">
+<link rel="canonical" href="https://puzzlemaru.xyz/2048-vs.html">
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" media="print" onload="this.media='all'">
@@ -54,15 +54,15 @@
 </header>
 <main class="game">
   <div class="game-head">
-    <h1>2048</h1>
+    <h1>2048 대결 <span style="font-size:13px;color:var(--accent);font-weight:700;vertical-align:middle">퍼즐마루 오리지널</span></h1>
     <div class="toolbar">
     <button class="primary" id="reset">새 게임</button>
     <button id="hintBtn">팁</button>
-    <span class="stat">점수 <b id="score">0</b></span>
-    <span class="stat">최고 <b id="best">0</b></span>
+    <span class="stat">나 <b id="score">0</b></span>
+    <span class="stat">김부장 <b id="ai">0</b></span>
   </div>
   </div>
-  <p class="hint">방향키 또는 스와이프로 타일을 미세요</p>
+  <p class="hint">한 수씩 번갈아 둡니다 — 합친 점수는 그 수를 둔 사람의 것. 보드가 멈추면 점수가 높은 쪽 승리</p>
 
   <div id="stage">
     <div id="cells"></div>
@@ -75,7 +75,7 @@
   <h2>2048 잘하는 법</h2>
   <p>가장 큰 타일을 한쪽 구석(예: 왼쪽 아래)에 고정하고, 그 구석을 비우는 방향으로는 절대 밀지 않는 것이 기본 전략입니다. 큰 타일 옆에 다음 크기 타일을 계단처럼 쌓아 두면 연쇄 합치기가 쉬워져요.</p>
 <p><a href="guide-2048.html" style="text-decoration:underline">→ 2048 공략 전체 보기</a></p>
-<p>변형 게임: <a href="2048-vs.html" style="text-decoration:underline">2048 대결 (vs AI)</a></p>
+<p>일반 모드: <a href="2048.html" style="text-decoration:underline">클래식 2048</a></p>
   </details>
 
   <div class="ad-slot">AD</div>
@@ -93,7 +93,7 @@
     128:["#b04527","#fff"],256:["#9c3b20","#fff"],512:["#86311a","#fff"],
     1024:["#5e2517","#fff"],2048:["#232220","#fff"]
   };
-  let grid, score, best, over, won, idSeq;
+  let grid, score, aiScore, over, won, idSeq, myTurn;
   let tiles; // id -> {v, r, c, el}
 
   const cellsEl = document.getElementById("cells");
@@ -139,18 +139,16 @@
   function reset() {
     document.getElementById("tiles").innerHTML = "";
     grid = Array.from({ length: 4 }, () => [null, null, null, null]);
-    tiles = new Map(); idSeq = 1; score = 0; over = false; won = false;
-    best = Number(localStorage.getItem("best2048") || 0);
+    tiles = new Map(); idSeq = 1; score = 0; aiScore = 0; over = false; won = false; myTurn = true;
     updateScore();
-    document.getElementById("msg").textContent = "";
+    document.getElementById("msg").textContent = "당신 차례입니다.";
     document.getElementById("msg").className = "msg";
     spawn(); spawn();
   }
 
   function updateScore() {
     document.getElementById("score").textContent = score;
-    if (score > best) { best = score; localStorage.setItem("best2048", best); }
-    document.getElementById("best").textContent = best;
+    document.getElementById("ai").textContent = aiScore;
   }
 
   function move(dr, dc) {
@@ -182,7 +180,7 @@
         // merge
         mergedIds.add(target.id);
         target.v *= 2;
-        score += target.v;
+        if (myTurn) score += target.v; else aiScore += target.v;
         grid[nr][nc] = target;
         t.r = nr; t.c = nc; styleTile(t);
         const dead = t;
@@ -205,17 +203,17 @@
       updateScore();
       setTimeout(() => {
         spawn();
-        if (!canMove()) {
-          over = true;
-          const m = document.getElementById("msg");
-          m.textContent = "더 움직일 수 없습니다. 게임 오버 — 점수: " + score;
-          m.className = "msg lose";
-          setTimeout(() => showGameOver({
-            kind: "lose", title: "게임 오버",
-            lines: ["점수 " + score.toLocaleString(), "최고 기록 " + best.toLocaleString()],
-            share: "퍼즐마루 2048 점수 " + score.toLocaleString() + "\nhttps://puzzlemaru.xyz/2048.html",
-            onRestart: reset
-          }), 600);
+        if (!canMove()) { endGame(); return; }
+        const m = document.getElementById("msg");
+        if (myTurn) {
+          myTurn = false;
+          m.textContent = "김부장이 생각 중...";
+          m.className = "msg";
+          setTimeout(aiTurn, 420);
+        } else {
+          myTurn = true;
+          m.textContent = "당신 차례입니다.";
+          m.className = "msg";
         }
       }, 130);
     }
@@ -233,7 +231,7 @@
 
   document.addEventListener("keydown", (e) => {
     const map = { ArrowUp:[-1,0], ArrowDown:[1,0], ArrowLeft:[0,-1], ArrowRight:[0,1] };
-    if (map[e.key]) { e.preventDefault(); move(...map[e.key]); }
+    if (map[e.key]) { e.preventDefault(); if (myTurn && !over) move(...map[e.key]); }
   });
 
   let sx = 0, sy = 0;
@@ -244,7 +242,7 @@
   stage.addEventListener("touchend", (e) => {
     const dx = e.changedTouches[0].clientX - sx;
     const dy = e.changedTouches[0].clientY - sy;
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 24 || !myTurn || over) return;
     if (Math.abs(dx) > Math.abs(dy)) move(0, dx > 0 ? 1 : -1);
     else move(dy > 0 ? 1 : -1, 0);
   });
@@ -305,6 +303,44 @@
     m.innerHTML = '팁 · 지금은 <b>' + best.name + '</b> 추천 — ' + reason + '. <a href="guide-2048.html" style="text-decoration:underline">전략 보기</a>';
   }
   document.getElementById("hintBtn").addEventListener("click", hint);
+
+  function aiTurn() {
+    if (over) return;
+    const vals = Array.from({length: 4}, (_, r) => Array.from({length: 4}, (_, c) => grid[r][c] ? grid[r][c].v : 0));
+    const dirs = [[1, 0], [0, -1], [0, 1], [-1, 0]];
+    let bestD = null, bestS = -Infinity;
+    for (const dd of dirs) {
+      const r1 = simMove(vals, dd[0], dd[1]);
+      if (!r1.moved) continue;
+      let empt = 0;
+      r1.g.forEach(row => row.forEach(v => { if (!v) empt++; }));
+      let oppBest = 0;
+      for (const ee of dirs) {
+        const r2 = simMove(r1.g, ee[0], ee[1]);
+        if (r2.moved && r2.gain > oppBest) oppBest = r2.gain;
+      }
+      const sc = r1.gain * 2 + empt * 60 - oppBest * 1.2;
+      if (sc > bestS) { bestS = sc; bestD = dd; }
+    }
+    if (!bestD) { endGame(); return; }
+    move(bestD[0], bestD[1]);
+  }
+
+  function endGame() {
+    over = true;
+    const win = score > aiScore, drawG = score === aiScore;
+    const m = document.getElementById("msg");
+    m.textContent = "게임 종료 — 나 " + score + " : 김부장 " + aiScore;
+    m.className = "msg " + (win ? "win" : "lose");
+    if (win) confettiBurst();
+    setTimeout(() => showGameOver({
+      kind: drawG ? undefined : win ? "win" : "lose",
+      title: drawG ? "무승부" : win ? "승리!" : "김부장 승리",
+      lines: ["나 " + score.toLocaleString() + "점 : 김부장 " + aiScore.toLocaleString() + "점"],
+      share: win ? "퍼즐마루 2048 대결 — 김부장을 " + score + ":" + aiScore + "로 이겼다\nhttps://puzzlemaru.xyz/2048-vs.html" : null,
+      onRestart: reset
+    }), 600);
+  }
 
   window.addEventListener("resize", () => { tiles.forEach(styleTile); });
   document.getElementById("reset").addEventListener("click", reset);

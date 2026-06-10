@@ -10,9 +10,9 @@
 <meta name="naver-site-verification" content="c453a63eb21eed7ee1bade214294b2e5b7919832" />
 <meta name="google-adsense-account" content="ca-pub-6840959424010586">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840959424010586" crossorigin="anonymous"></script>
-<title>스도쿠 무료 게임 — 오늘의 퍼즐, 난이도 4단계 | 퍼즐마루</title>
-<meta name="description" content="설치 없이 브라우저에서 바로 하는 무료 스도쿠. 입문·초급·중급·고급 난이도와 매일 바뀌는 오늘의 스도쿠를 제공합니다. 메모 기능과 타이머 포함.">
-<link rel="canonical" href="https://puzzlemaru.xyz/sudoku.html">
+<title>스도쿠 스코어 어택 — 콤보로 점수 경쟁 | 퍼즐마루</title>
+<meta name="description" content="퍼즐마루 오리지널 스도쿠 스코어 어택. 연속 정답 콤보와 시간 보너스로 점수를 쌓는 점수 경쟁 스도쿠입니다. 최고 점수에 도전하세요.">
+<link rel="canonical" href="https://puzzlemaru.xyz/sudoku-score.html">
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" media="print" onload="this.media='all'">
@@ -72,7 +72,7 @@
 </header>
 <main class="game">
   <div class="game-head">
-    <h1>스도쿠</h1>
+    <h1>스도쿠 스코어 <span style="font-size:13px;color:var(--accent);font-weight:700;vertical-align:middle">퍼즐마루 오리지널</span></h1>
     <div class="toolbar">
     <select id="difficulty">
       <option value="easy">입문 (쉬움)</option>
@@ -81,13 +81,14 @@
       <option value="expert">고급</option>
     </select>
     <button class="primary" id="newGame">새 게임</button>
-    <button id="dailyBtn">오늘의 스도쿠</button>
+    <span class="stat">점수 <b id="score">0</b></span>
+    <span class="stat">콤보 <b id="combo">×0</b></span>
     <button id="hintBtn">힌트</button>
     <span class="stat">시간 <b id="timer">00:00</b></span>
     <span class="stat">실수 <b id="mistakes">0</b>/3</span>
   </div>
   </div>
-  <p class="hint">빈칸을 누르고 숫자를 입력하세요 · 메모 모드 지원</p>
+  <p class="hint">정답 +점수 · 연속 정답 콤보 보너스 · 실수 -100 · 힌트 -150 · 빨리 풀수록 완성 보너스 큼</p>
 
   <div id="board" aria-label="스도쿠 보드"></div>
 
@@ -100,7 +101,7 @@
   <p>비어 있는 칸을 눌러 선택한 뒤 숫자 패드를 누르면 입력됩니다. 연필(✏️) 모드를 켜면 후보 숫자를 메모할 수 있어요. 실수가 3번 누적되면 게임이 종료됩니다. 오늘의 스도쿠는 매일 자정에 바뀌며 모든 방문자에게 같은 문제가 출제됩니다.</p>
   <p>처음이라면 입문 난이도로 감을 잡고, <a href="guide-sudoku.html">스도쿠 공식 정리 가이드</a>에서 스캐닝과 후보 소거법을 익히면 중급 이상도 어렵지 않게 풀 수 있습니다.</p>
 <p><a href="guide-sudoku.html" style="text-decoration:underline">→ 스도쿠 공략 전체 보기</a></p>
-<p>변형 게임: <a href="sudoku-score.html" style="text-decoration:underline">스도쿠 스코어 어택</a></p>
+<p>일반 모드: <a href="sudoku.html" style="text-decoration:underline">클래식 스도쿠 · 오늘의 퍼즐</a></p>
   </details>
 
   <div class="ad-slot">AD</div>
@@ -115,6 +116,8 @@
   const N = 9;
   let solution = [], puzzle = [], user = [], notes = [], given = [];
   let sel = -1, noteMode = false, mistakes = 0, done = false, coach = -1;
+  let score = 0, combo = 0;
+  const BASE = { easy: 50, medium: 80, hard: 120, expert: 160 };
   let timerInt = null, seconds = 0;
 
   function mulberry32(a) {
@@ -231,6 +234,7 @@
       given = puzzle.map(v => v !== 0);
       notes = Array.from({ length: 81 }, () => new Set());
       sel = -1; mistakes = 0; done = false; coach = -1;
+      score = 0; combo = 0; updateScoreHud();
       document.getElementById("mistakes").textContent = "0";
       msg.textContent = daily ? "오늘의 스도쿠입니다. 행운을 빌어요." : "";
       startTimer();
@@ -279,6 +283,11 @@
     }
   }
 
+  function updateScoreHud() {
+    document.getElementById("score").textContent = score;
+    document.getElementById("combo").textContent = "×" + combo;
+  }
+
   function input(v) {
     if (done || sel < 0 || given[sel]) return;
     coach = -1;
@@ -293,6 +302,7 @@
     user[sel] = v;
     if (v !== solution[sel]) {
       mistakes++;
+      combo = 0; score = Math.max(0, score - 100); updateScoreHud();
       document.getElementById("mistakes").textContent = mistakes;
       if (mistakes >= 3) {
         done = true; clearInterval(timerInt);
@@ -305,15 +315,23 @@
       }
     } else {
       notes[sel].clear();
+      combo++;
+      score += Math.round(BASE[document.getElementById("difficulty").value] * (1 + Math.min(combo, 10) * 0.1));
+      updateScoreHud();
       if (user.every((x, i) => x === solution[i])) {
         done = true; clearInterval(timerInt);
-        setMsg("완성! 기록: " + document.getElementById("timer").textContent, "win");
+        const bonus = Math.max(0, 3000 - seconds * 5);
+        score += bonus;
+        updateScoreHud();
+        const bestS = Number(localStorage.getItem("bestSudokuScore") || 0);
+        if (score > bestS) localStorage.setItem("bestSudokuScore", score);
+        setMsg("완성! 점수 " + score + "점 (시간 보너스 +" + bonus + ")", "win");
         confettiBurst();
         setTimeout(() => showGameOver({
-          kind: "win", title: "퍼즐 완성!",
-          lines: ["기록 " + document.getElementById("timer").textContent,
+          kind: "win", title: score.toLocaleString() + "점!",
+          lines: ["시간 보너스 +" + bonus, "최고 기록 " + Math.max(score, bestS).toLocaleString() + "점",
                   "난이도 · " + document.getElementById("difficulty").selectedOptions[0].text],
-          share: "퍼즐마루 스도쿠(" + document.getElementById("difficulty").selectedOptions[0].text + ") " + document.getElementById("timer").textContent + " 클리어\nhttps://puzzlemaru.xyz/sudoku.html",
+          share: "퍼즐마루 스도쿠 스코어 " + score + "점 (" + document.getElementById("difficulty").selectedOptions[0].text + ")\nhttps://puzzlemaru.xyz/sudoku-score.html",
           onRestart: () => newGame(false)
         }), 700);
       }
@@ -366,6 +384,7 @@
 
   function hint() {
     if (done) return;
+    score = Math.max(0, score - 150); updateScoreHud();
     const g = user.map((v, i) => (v !== 0 && v === solution[i]) ? v : 0);
     const cands = [];
     for (let i = 0; i < 81; i++) cands[i] = g[i] === 0 ? candidatesOf(g, i) : null;
@@ -403,7 +422,6 @@
   document.getElementById("hintBtn").addEventListener("click", hint);
 
   document.getElementById("newGame").addEventListener("click", () => newGame(false));
-  document.getElementById("dailyBtn").addEventListener("click", () => newGame(true));
   document.getElementById("difficulty").addEventListener("change", () => newGame(false));
 
   newGame(false);
