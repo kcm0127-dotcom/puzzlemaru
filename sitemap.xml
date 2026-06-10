@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://puzzlemaru.pages.dev/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://puzzlemaru.pages.dev/sudoku.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://puzzlemaru.pages.dev/minesweeper.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://puzzlemaru.pages.dev/2048.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://puzzlemaru.pages.dev/omok.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://puzzlemaru.pages.dev/guides.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://puzzlemaru.pages.dev/guide-sudoku.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://puzzlemaru.pages.dev/guide-minesweeper.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://puzzlemaru.pages.dev/guide-2048.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://puzzlemaru.pages.dev/guide-omok.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://puzzlemaru.xyz/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://puzzlemaru.xyz/sudoku.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://puzzlemaru.xyz/minesweeper.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://puzzlemaru.xyz/2048.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://puzzlemaru.xyz/omok.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://puzzlemaru.xyz/guides.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://puzzlemaru.xyz/guide-sudoku.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://puzzlemaru.xyz/guide-minesweeper.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://puzzlemaru.xyz/guide-2048.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://puzzlemaru.xyz/guide-omok.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>
