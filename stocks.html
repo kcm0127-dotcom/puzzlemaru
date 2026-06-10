@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace("https://puzzlemaru.xyz"+location.pathname+location.search);</script>
+<meta name="google-site-verification" content="qJrb2RbVZTgje-XaXWygP4cYyEMLFqKScbPZ5_QbVhk" />
+<meta name="naver-site-verification" content="3d9b2d6f2631e9f012be372bff5a87845dd4f225" />
+<meta name="google-site-verification" content="1Y8FATV2pnpzcQtXSazVYOD2g1D-5Fil9KC-PvCvXAo" />
+<meta name="naver-site-verification" content="c453a63eb21eed7ee1bade214294b2e5b7919832" />
+<meta name="google-adsense-account" content="ca-pub-6840959424010586">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840959424010586" crossorigin="anonymous"></script>
+<title>모의 주식 투자 게임 — 가상 종목 60일 수익률 도전 | 퍼즐마루</title>
+<meta name="description" content="가상 종목 6개로 즐기는 무료 모의 주식 투자 게임. 1,000만 원으로 시작해 60일 동안 뉴스를 읽고 사고팔며 수익률에 도전하세요. 설치·가입 없음.">
+<link rel="canonical" href="https://puzzlemaru.xyz/stocks.html">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+<style>
+#market { max-width: 640px; margin: 0 auto; }
+table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); border: 2px solid var(--text); border-radius: 6px; overflow: hidden; box-shadow: 0 10px 28px rgba(35,34,32,.08); }
+table.mkt { border-radius: 0; }
+.mkt th { font-size: 12.5px; color: var(--muted); font-weight: 600; text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--line-strong); background: #f3f1ea; }
+.mkt th:first-child { text-align: left; }
+.mkt td { padding: 9px 10px; text-align: right; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; font-size: 14.5px; cursor: pointer; }
+.mkt td:first-child { text-align: left; font-weight: 600; }
+.mkt tr:last-child td { border-bottom: none; }
+.mkt tr.sel td { background: var(--accent-soft); }
+.mkt tr:hover td { background: #f3f1ea; }
+.mkt tr.sel:hover td { background: var(--accent-soft); }
+.up { color: var(--danger); }
+.down { color: #2456a6; }
+#panel { max-width: 640px; margin: 14px auto 0; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; padding: 16px; }
+#panel h2 { font-size: 17px; margin-bottom: 4px; }
+#panel .meta { font-size: 13.5px; color: var(--muted); margin-bottom: 10px; }
+#chart { width: 100%; height: 130px; display: block; }
+#trade { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+#trade input { width: 90px; padding: 9px 10px; border: 1px solid var(--line-strong); border-radius: 8px; font-size: 15px; font-family: inherit; }
+#news { max-width: 640px; margin: 14px auto 0; font-size: 14px; }
+#news div { padding: 7px 12px; border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 8px 8px 0; margin-bottom: 6px; color: #4a463e; }
+.disc { max-width: 640px; margin: 18px auto 0; font-size: 12.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="nav-wrap">
+    <a class="logo" href="index.html">퍼즐<span>마루</span></a>
+    <nav class="main">
+      <a href="sudoku.html">스도쿠</a>
+      <a href="minesweeper.html">지뢰찾기</a>
+      <a href="2048.html">2048</a>
+      <a href="omok.html">오목</a>
+      <a href="stocks.html" class="active">모의주식</a>
+      <a href="guides.html">공략</a>
+      <a href="blog.html">읽을거리</a>
+    </nav>
+  </div>
+</header>
+<main class="game">
+  <div class="game-head">
+    <h1>모의주식</h1>
+    <div class="toolbar">
+    <button class="primary" id="nextDay">다음 날 ▸</button>
+    <button id="reset">새 게임</button>
+    <span class="stat">DAY <b id="day">1</b>/60</span>
+    <span class="stat">총자산 <b id="total">1,000만</b></span>
+    <span class="stat">수익률 <b id="ret">0.0%</b></span>
+  </div>
+  </div>
+  <p class="hint">1,000만 원으로 시작 · 60일 뒤 수익률로 승부 · 종목을 눌러 매매하세요</p>
+
+  <div id="market"></div>
+  <div id="panel"></div>
+  <div id="news"></div>
+  <p class="msg" id="msg"></p>
+
+  <details class="how">
+  <summary>게임 방법 · 팁</summary>
+  <h2>모의주식 게임 방법</h2>
+  <p>가상 기업 6곳의 주식을 사고팔며 60일 동안 자산을 불리는 게임입니다. "다음 날" 버튼을 누르면 하루가 지나고 주가가 움직입니다. 가끔 뉴스가 뜨면서 특정 종목이 크게 출렁이니, 뉴스에 어떻게 반응할지가 승부처예요. 매도할 때는 수수료·세금 0.25%가 빠집니다.</p>
+  <p>배울 수 있는 것: 한 종목에 전 재산을 넣으면 수익도 크지만 한 방에 무너질 수 있다는 것(분산), 떨어진 주식을 손절할지 버틸지의 판단, 그리고 단기 시세는 예측이 거의 불가능하다는 것. 게임에서 미리 경험해 보세요.</p>
+  </details>
+
+  <p class="disc">본 게임의 종목·가격·뉴스는 모두 가상이며, 실제 투자와 무관한 오락·교육용 콘텐츠입니다. 투자 조언이 아닙니다.</p>
+
+  <div class="ad-slot">AD</div>
+</main>
+<footer class="site">
+  <div><a href="index.html">홈</a> · <a href="about.html">소개·문의</a> · <a href="privacy.html">개인정보처리방침</a></div>
+  <div style="margin-top:8px">© 2026 퍼즐마루</div>
+</footer>
+<script src="confetti.js"></script>
+<script>
+(function () {
+  const START_CASH = 10000000, DAYS = 60, FEE = 0.0025;
+  const STOCKS = [
+    { name: "한빛전자",   sector: "반도체", drift: 0.0015, vol: 0.028, p0: 68000 },
+    { name: "마루식품",   sector: "음식료", drift: 0.0008, vol: 0.013, p0: 24500 },
+    { name: "청솔바이오", sector: "제약",   drift: 0.0010, vol: 0.045, p0: 41000 },
+    { name: "도담건설",   sector: "건설",   drift: 0.0005, vol: 0.020, p0: 12300 },
+    { name: "새벽항공",   sector: "운송",   drift: 0.0010, vol: 0.030, p0: 17800 },
+    { name: "별빛게임즈", sector: "콘텐츠", drift: 0.0018, vol: 0.038, p0: 53000 }
+  ];
+  const EVENTS = [
+    { t: "{s}, 신제품 발표에 시장 기대감", mul: [1.06, 1.18] },
+    { t: "{s}, 분기 실적 시장 예상치 상회", mul: [1.05, 1.14] },
+    { t: "{s}, 대규모 수주 계약 체결 소식", mul: [1.08, 1.20] },
+    { t: "{s}, 실적 부진 우려에 투자심리 위축", mul: [0.84, 0.94] },
+    { t: "{s}, 핵심 사업 차질 소식에 급락", mul: [0.80, 0.92] },
+    { t: "{s}, 경쟁사 공세에 점유율 하락 전망", mul: [0.87, 0.95] }
+  ];
+  let day, cash, hold, prices, sel = 0, finished;
+
+  function randn() {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+  const fmt = n => Math.round(n).toLocaleString("ko-KR");
+  function fmtMan(n) {
+    if (Math.abs(n) >= 100000000) return (n / 100000000).toFixed(2) + "억";
+    return fmt(n / 10000) + "만";
+  }
+
+  function reset() {
+    day = 1; cash = START_CASH; finished = false;
+    hold = STOCKS.map(() => ({ qty: 0, avg: 0 }));
+    prices = STOCKS.map(s => {
+      const h = [s.p0];
+      for (let i = 0; i < 19; i++) {
+        h.push(Math.max(100, h[h.length - 1] * Math.exp((s.drift - s.vol * s.vol / 2) + s.vol * randn())));
+      }
+      return h;
+    });
+    document.getElementById("news").innerHTML = "";
+    setMsg("");
+    render();
+  }
+
+  function cur(i) { return prices[i][prices[i].length - 1]; }
+  function prev(i) { return prices[i][prices[i].length - 2]; }
+
+  function totalAssets() {
+    return cash + hold.reduce((a, h, i) => a + h.qty * cur(i), 0);
+  }
+
+  function setMsg(t, cls) {
+    const m = document.getElementById("msg");
+    m.textContent = t; m.className = "msg " + (cls || "");
+  }
+
+  function pushNews(t) {
+    const n = document.getElementById("news");
+    const d = document.createElement("div");
+    d.textContent = "DAY " + day + " · " + t;
+    n.prepend(d);
+    while (n.children.length > 3) n.removeChild(n.lastChild);
+  }
+
+  function nextDay() {
+    if (finished) return;
+    day++;
+    STOCKS.forEach((s, i) => {
+      let p = cur(i) * Math.exp((s.drift - s.vol * s.vol / 2) + s.vol * randn());
+      prices[i].push(Math.max(100, p));
+    });
+    if (Math.random() < 0.30) {
+      const i = Math.floor(Math.random() * STOCKS.length);
+      const ev = EVENTS[Math.floor(Math.random() * EVENTS.length)];
+      const mul = ev.mul[0] + Math.random() * (ev.mul[1] - ev.mul[0]);
+      prices[i][prices[i].length - 1] *= mul;
+      pushNews(ev.t.replace("{s}", STOCKS[i].name) + (mul >= 1 ? " ▲" : " ▼"));
+    }
+    if (day >= DAYS) {
+      finished = true;
+      const ret = (totalAssets() / START_CASH - 1) * 100;
+      const best = Number(localStorage.getItem("bestStockRet") || -Infinity);
+      if (ret > best) localStorage.setItem("bestStockRet", ret.toFixed(1));
+      if (ret > 0) {
+        setMsg("60일 종료! 최종 수익률 +" + ret.toFixed(1) + "% — 최고 기록 " + Math.max(ret, best).toFixed(1) + "%", "win");
+        confettiBurst();
+      } else {
+        setMsg("60일 종료. 최종 수익률 " + ret.toFixed(1) + "% — 새 게임으로 만회하세요.", "lose");
+      }
+    }
+    render();
+  }
+
+  function trade(buy) {
+    if (finished) return;
+    const qty = Math.max(0, Math.floor(Number(document.getElementById("qty").value) || 0));
+    if (!qty) { setMsg("수량을 입력하세요."); return; }
+    const p = cur(sel), h = hold[sel];
+    if (buy) {
+      const cost = qty * p;
+      if (cost > cash) { setMsg("현금이 부족해요. 최대 " + Math.floor(cash / p) + "주 매수 가능."); return; }
+      h.avg = (h.avg * h.qty + cost) / (h.qty + qty);
+      h.qty += qty; cash -= cost;
+      setMsg(STOCKS[sel].name + " " + qty + "주 매수 (" + fmt(p) + "원)");
+    } else {
+      if (qty > h.qty) { setMsg("보유 수량(" + h.qty + "주)보다 많이 팔 수 없어요."); return; }
+      const proceeds = qty * p * (1 - FEE);
+      h.qty -= qty; cash += proceeds;
+      if (h.qty === 0) h.avg = 0;
+      setMsg(STOCKS[sel].name + " " + qty + "주 매도 (수수료 제외 " + fmt(proceeds) + "원)");
+    }
+    render();
+  }
+
+  function drawChart() {
+    const cv = document.getElementById("chart");
+    const W = cv.clientWidth || 560, H = 130;
+    cv.width = W * 2; cv.height = H * 2;
+    const ctx = cv.getContext("2d");
+    ctx.scale(2, 2);
+    const data = prices[sel].slice(-40);
+    const min = Math.min(...data), max = Math.max(...data), span = (max - min) || 1;
+    const x = i => 6 + (W - 12) * i / (data.length - 1);
+    const y = v => 8 + (H - 16) * (1 - (v - min) / span);
+    ctx.strokeStyle = "#e6e3da"; ctx.lineWidth = 1;
+    for (let k = 0; k <= 2; k++) {
+      ctx.beginPath(); ctx.moveTo(6, 8 + (H - 16) * k / 2); ctx.lineTo(W - 6, 8 + (H - 16) * k / 2); ctx.stroke();
+    }
+    if (hold[sel].qty > 0 && hold[sel].avg >= min && hold[sel].avg <= max) {
+      ctx.strokeStyle = "#7a766c"; ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(6, y(hold[sel].avg)); ctx.lineTo(W - 6, y(hold[sel].avg)); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    ctx.strokeStyle = "#c4502e"; ctx.lineWidth = 2;
+    ctx.beginPath();
+    data.forEach((v, i) => i ? ctx.lineTo(x(i), y(v)) : ctx.moveTo(x(i), y(v)));
+    ctx.stroke();
+  }
+
+  function render() {
+    document.getElementById("day").textContent = Math.min(day, DAYS);
+    const tot = totalAssets();
+    document.getElementById("total").textContent = fmtMan(tot);
+    const ret = (tot / START_CASH - 1) * 100;
+    const retEl = document.getElementById("ret");
+    retEl.textContent = (ret >= 0 ? "+" : "") + ret.toFixed(1) + "%";
+    retEl.style.color = ret > 0 ? "var(--danger)" : ret < 0 ? "#2456a6" : "";
+
+    let rows = "<table class='mkt'><tr><th>종목</th><th>현재가</th><th>전일비</th><th>보유</th><th>평가손익</th></tr>";
+    STOCKS.forEach((s, i) => {
+      const p = cur(i), chg = (p / prev(i) - 1) * 100;
+      const h = hold[i];
+      const pl = h.qty ? (p - h.avg) * h.qty : 0;
+      rows += "<tr class='" + (i === sel ? "sel" : "") + "' data-i='" + i + "'>" +
+        "<td>" + s.name + "</td>" +
+        "<td>" + fmt(p) + "</td>" +
+        "<td class='" + (chg >= 0 ? "up" : "down") + "'>" + (chg >= 0 ? "▲" : "▼") + Math.abs(chg).toFixed(1) + "%</td>" +
+        "<td>" + (h.qty ? h.qty + "주" : "—") + "</td>" +
+        "<td class='" + (pl > 0 ? "up" : pl < 0 ? "down" : "") + "'>" + (h.qty ? (pl >= 0 ? "+" : "") + fmt(pl) : "—") + "</td></tr>";
+    });
+    rows += "</table>";
+    document.getElementById("market").innerHTML = rows;
+    document.querySelectorAll(".mkt tr[data-i]").forEach(tr => {
+      tr.addEventListener("click", () => { sel = Number(tr.dataset.i); render(); });
+    });
+
+    const s = STOCKS[sel], h = hold[sel];
+    document.getElementById("panel").innerHTML =
+      "<h2>" + s.name + " <span style='font-weight:400;font-size:13px;color:var(--muted)'>" + s.sector + "</span></h2>" +
+      "<div class='meta'>현재가 <b>" + fmt(cur(sel)) + "원</b>" +
+      (h.qty ? " · 보유 " + h.qty + "주 · 평균단가 " + fmt(h.avg) + "원" : "") +
+      " · 현금 " + fmt(cash) + "원</div>" +
+      "<canvas id='chart'></canvas>" +
+      "<div id='trade'><input id='qty' type='number' min='1' placeholder='수량' inputmode='numeric'>" +
+      "<button class='primary' id='buyBtn'>매수</button>" +
+      "<button id='sellBtn'>매도</button>" +
+      "<button id='allBtn'>전량매도</button></div>";
+    drawChart();
+    document.getElementById("buyBtn").addEventListener("click", () => trade(true));
+    document.getElementById("sellBtn").addEventListener("click", () => trade(false));
+    document.getElementById("allBtn").addEventListener("click", () => {
+      document.getElementById("qty").value = hold[sel].qty || "";
+      if (hold[sel].qty) trade(false);
+    });
+  }
+
+  document.getElementById("nextDay").addEventListener("click", nextDay);
+  document.getElementById("reset").addEventListener("click", reset);
+  window.addEventListener("resize", drawChart);
+  reset();
+})();
+</script>
+</body>
+</html>

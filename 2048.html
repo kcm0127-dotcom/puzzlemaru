@@ -44,6 +44,7 @@
       <a href="minesweeper.html">지뢰찾기</a>
       <a href="2048.html" class="active">2048</a>
       <a href="omok.html">오목</a>
+      <a href="stocks.html">모의주식</a>
       <a href="guides.html">공략</a>
       <a href="blog.html">읽을거리</a>
     </nav>
@@ -54,6 +55,7 @@
     <h1>2048</h1>
     <div class="toolbar">
     <button class="primary" id="reset">새 게임</button>
+    <button id="hintBtn">팁</button>
     <span class="stat">점수 <b id="score">0</b></span>
     <span class="stat">최고 <b id="best">0</b></span>
   </div>
@@ -237,6 +239,63 @@
     if (Math.abs(dx) > Math.abs(dy)) move(0, dx > 0 ? 1 : -1);
     else move(dy > 0 ? 1 : -1, 0);
   });
+
+
+  function simMove(vals, dr, dc) {
+    const g = vals.map(row => row.slice());
+    let moved = false, gain = 0;
+    const range = [0, 1, 2, 3];
+    const rs = dr === 1 ? [3, 2, 1, 0] : range;
+    const cs = dc === 1 ? [3, 2, 1, 0] : range;
+    const merged = Array.from({length: 4}, () => [false, false, false, false]);
+    for (const r of rs) for (const c of cs) {
+      const v = g[r][c];
+      if (!v) continue;
+      let nr = r, nc = c;
+      while (true) {
+        const tr = nr + dr, tc = nc + dc;
+        if (tr < 0 || tr > 3 || tc < 0 || tc > 3) break;
+        if (!g[tr][tc]) { nr = tr; nc = tc; continue; }
+        if (g[tr][tc] === v && !merged[tr][tc]) { nr = tr; nc = tc; }
+        break;
+      }
+      if (nr === r && nc === c) continue;
+      moved = true;
+      g[r][c] = 0;
+      if (g[nr][nc]) { g[nr][nc] = v * 2; gain += v * 2; merged[nr][nc] = true; }
+      else g[nr][nc] = v;
+    }
+    return { g, moved, gain };
+  }
+
+  function hint() {
+    if (over) return;
+    const vals = Array.from({length: 4}, (_, r) => Array.from({length: 4}, (_, c) => grid[r][c] ? grid[r][c].v : 0));
+    const dirs = [
+      { d: [1, 0], name: "아래 ↓" }, { d: [0, -1], name: "왼쪽 ←" },
+      { d: [0, 1], name: "오른쪽 →" }, { d: [-1, 0], name: "위 ↑" }
+    ];
+    let best = null, bestScore = -Infinity;
+    for (const dir of dirs) {
+      const r = simMove(vals, dir.d[0], dir.d[1]);
+      if (!r.moved) continue;
+      let empt = 0;
+      r.g.forEach(row => row.forEach(v => { if (!v) empt++; }));
+      let score = empt * 120 + r.gain * 2;
+      if (r.g[3][0] === Math.max(...r.g.flat())) score += 600;
+      if (dir.d[0] === -1) score -= 800;
+      if (score > bestScore) { bestScore = score; best = Object.assign({}, dir, r); }
+    }
+    const m = document.getElementById("msg");
+    m.className = "msg";
+    if (!best) return;
+    let reason;
+    if (best.gain > 0) reason = "합치기로 " + best.gain + "점을 얻으면서 빈칸을 확보해요";
+    else reason = "타일을 한쪽으로 모아 계단을 유지해요";
+    if (best.d[0] === -1) reason = "어쩔 수 없는 상황이라 위로 — 계단이 무너지지 않게 조심하세요";
+    m.innerHTML = '팁 · 지금은 <b>' + best.name + '</b> 추천 — ' + reason + '. <a href="guide-2048.html" style="text-decoration:underline">전략 보기</a>';
+  }
+  document.getElementById("hintBtn").addEventListener("click", hint);
 
   window.addEventListener("resize", () => { tiles.forEach(styleTile); });
   document.getElementById("reset").addEventListener("click", reset);

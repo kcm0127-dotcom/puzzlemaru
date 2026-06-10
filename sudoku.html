@@ -38,6 +38,7 @@
 .cell.same { background: #eae6d9; }
 .cell.user { color: var(--accent); }
 .cell.wrong { color: var(--danger); }
+.cell.coach { box-shadow: inset 0 0 0 3px var(--accent); }
 .cell .notes {
   position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3,1fr);
   font-size: clamp(7px, 1.6vw, 10px); color: var(--muted); line-height: 1;
@@ -61,6 +62,7 @@
       <a href="minesweeper.html">지뢰찾기</a>
       <a href="2048.html">2048</a>
       <a href="omok.html">오목</a>
+      <a href="stocks.html">모의주식</a>
       <a href="guides.html">공략</a>
       <a href="blog.html">읽을거리</a>
     </nav>
@@ -78,6 +80,7 @@
     </select>
     <button class="primary" id="newGame">새 게임</button>
     <button id="dailyBtn">오늘의 스도쿠</button>
+    <button id="hintBtn">힌트</button>
     <span class="stat">시간 <b id="timer">00:00</b></span>
     <span class="stat">실수 <b id="mistakes">0</b>/3</span>
   </div>
@@ -108,7 +111,7 @@
 (function () {
   const N = 9;
   let solution = [], puzzle = [], user = [], notes = [], given = [];
-  let sel = -1, noteMode = false, mistakes = 0, done = false;
+  let sel = -1, noteMode = false, mistakes = 0, done = false, coach = -1;
   let timerInt = null, seconds = 0;
 
   function mulberry32(a) {
@@ -224,7 +227,7 @@
       user = puzzle.slice();
       given = puzzle.map(v => v !== 0);
       notes = Array.from({ length: 81 }, () => new Set());
-      sel = -1; mistakes = 0; done = false;
+      sel = -1; mistakes = 0; done = false; coach = -1;
       document.getElementById("mistakes").textContent = "0";
       msg.textContent = daily ? "오늘의 스도쿠입니다. 행운을 빌어요." : "";
       startTimer();
@@ -243,6 +246,7 @@
       if (c === 2 || c === 5) cell.classList.add("box-r");
       if (r === 2 || r === 5) cell.classList.add("box-b");
       if (given[i]) cell.classList.add("given");
+      if (i === coach) cell.classList.add("coach");
       if (i === sel) cell.classList.add("sel");
       else if (sel >= 0) {
         const sr = Math.floor(sel / 9), sc = sel % 9;
@@ -274,6 +278,7 @@
 
   function input(v) {
     if (done || sel < 0 || given[sel]) return;
+    coach = -1;
     if (v === 0) {
       user[sel] = 0; notes[sel].clear(); render(); return;
     }
@@ -336,6 +341,51 @@
       if (e.key === "ArrowRight" && c < 8) { sel++; render(); e.preventDefault(); }
     }
   });
+
+
+  function candidatesOf(g, i) {
+    const out = [];
+    for (let v = 1; v <= 9; v++) if (valid(g, i, v)) out.push(v);
+    return out;
+  }
+
+  function hint() {
+    if (done) return;
+    const g = user.map((v, i) => (v !== 0 && v === solution[i]) ? v : 0);
+    const cands = [];
+    for (let i = 0; i < 81; i++) cands[i] = g[i] === 0 ? candidatesOf(g, i) : null;
+    const m = document.getElementById("msg");
+    m.className = "msg";
+    for (let i = 0; i < 81; i++) {
+      if (cands[i] && cands[i].length === 1) {
+        coach = i; sel = i; render();
+        m.innerHTML = '힌트 · <b>네이키드 싱글</b>: 표시된 칸은 행·열·박스의 숫자를 빼고 나면 후보가 <b>' + cands[i][0] + '</b> 하나뿐이에요. <a href="guide-sudoku.html" style="text-decoration:underline">기법 설명</a>';
+        return;
+      }
+    }
+    const units = [];
+    for (let r = 0; r < 9; r++) units.push({ name: (r + 1) + "행", cells: Array.from({length: 9}, (_, c) => r * 9 + c) });
+    for (let c = 0; c < 9; c++) units.push({ name: (c + 1) + "열", cells: Array.from({length: 9}, (_, r) => r * 9 + c) });
+    for (let br = 0; br < 3; br++) for (let bc = 0; bc < 3; bc++)
+      units.push({ name: "3×3 박스", cells: Array.from({length: 9}, (_, k) => (br * 3 + Math.floor(k / 3)) * 9 + bc * 3 + k % 3) });
+    for (const u of units) {
+      for (let v = 1; v <= 9; v++) {
+        const spots = u.cells.filter(i => cands[i] && cands[i].includes(v));
+        if (spots.length === 1) {
+          coach = spots[0]; sel = spots[0]; render();
+          m.innerHTML = '힌트 · <b>히든 싱글</b>: 이 <b>' + u.name + '</b>에서 <b>' + v + '</b>이(가) 들어갈 수 있는 칸은 표시된 곳뿐이에요. <a href="guide-sudoku.html" style="text-decoration:underline">기법 설명</a>';
+          return;
+        }
+      }
+    }
+    let best = -1, bn = 10;
+    for (let i = 0; i < 81; i++) if (cands[i] && cands[i].length < bn) { bn = cands[i].length; best = i; }
+    if (best >= 0) {
+      coach = best; sel = best; render();
+      m.innerHTML = '싱글로 확정되는 칸이 없네요. 메모를 켜고 표시된 칸(후보 ' + bn + '개: ' + cands[best].join(", ") + ')부터 좁혀보세요. <a href="guide-sudoku.html" style="text-decoration:underline">중급 기법 보기</a>';
+    }
+  }
+  document.getElementById("hintBtn").addEventListener("click", hint);
 
   document.getElementById("newGame").addEventListener("click", () => newGame(false));
   document.getElementById("dailyBtn").addEventListener("click", () => newGame(true));

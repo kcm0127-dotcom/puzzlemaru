@@ -32,6 +32,7 @@
       <a href="minesweeper.html">지뢰찾기</a>
       <a href="2048.html">2048</a>
       <a href="omok.html" class="active">오목</a>
+      <a href="stocks.html">모의주식</a>
       <a href="guides.html">공략</a>
       <a href="blog.html">읽을거리</a>
     </nav>
@@ -47,6 +48,7 @@
     </select>
     <button class="primary" id="reset">새 게임</button>
     <button id="undo">무르기</button>
+    <button id="hintBtn">힌트</button>
   </div>
   </div>
   <p class="hint">당신이 흑돌(선공) · 다섯 알을 이으면 승리</p>
@@ -72,11 +74,11 @@
 (function () {
   const N = 15, CV = document.getElementById("omok"), ctx = CV.getContext("2d");
   const PAD = 30, GAP = (600 - PAD * 2) / (N - 1);
-  let board, history, finished, thinking;
+  let board, history, finished, thinking, hintPos = null;
 
   function reset() {
     board = Array.from({ length: N }, () => new Array(N).fill(0));
-    history = []; finished = false; thinking = false;
+    history = []; finished = false; thinking = false; hintPos = null;
     setMsg("당신 차례입니다 (흑)");
     draw();
   }
@@ -122,6 +124,14 @@
       const x = PAD + last[1] * GAP, y = PAD + last[0] * GAP;
       ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2);
       ctx.fillStyle = board[last[0]][last[1]] === 1 ? "#fbf9f3" : "#c4502e"; ctx.fill();
+    }
+    if (hintPos) {
+      const x = PAD + hintPos[1] * GAP, y = PAD + hintPos[0] * GAP;
+      ctx.save();
+      ctx.setLineDash([5, 4]);
+      ctx.strokeStyle = "#c4502e"; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(x, y, GAP * 0.42, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
     }
   }
 
@@ -191,6 +201,7 @@
   }
 
   function place(r, c, p) {
+    hintPos = null;
     board[r][c] = p;
     history.push([r, c]);
     draw();
@@ -234,6 +245,38 @@
     setMsg("당신 차례입니다 (흑)");
     draw();
   });
+
+
+  function hint() {
+    if (finished || thinking) return;
+    if (!history.length) { setMsg("첫 수는 중앙(화점) 근처가 가장 좋아요."); return; }
+    let best = null, bestS = -1, bestA = 0, bestD = 0;
+    for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+      if (board[r][c]) continue;
+      let near = false;
+      for (let dr = -2; dr <= 2 && !near; dr++) for (let dc = -2; dc <= 2; dc++) {
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < N && nc >= 0 && nc < N && board[nr][nc]) { near = true; break; }
+      }
+      if (!near) continue;
+      const a = scoreCell(r, c, 1), dd = scoreCell(r, c, 2);
+      const s = a + dd * 0.9;
+      if (s > bestS) { bestS = s; best = [r, c]; bestA = a; bestD = dd; }
+    }
+    if (!best) return;
+    hintPos = best;
+    draw();
+    let reason;
+    if (bestA >= 1000000) reason = "여기 두면 바로 다섯이 완성돼요!";
+    else if (bestA >= 50000) reason = "열린 4를 만들어요 — 사실상 승리가 보이는 수";
+    else if (bestD >= 50000) reason = "상대의 4를 지금 막지 않으면 집니다";
+    else if (bestA >= 4000 && bestD >= 4000) reason = "내 3을 만들면서 상대 3도 막는 일석이조 자리";
+    else if (bestD >= 4000) reason = "상대의 열린 3을 막아야 할 타이밍이에요";
+    else if (bestA >= 4000) reason = "열린 3을 만드는 공격 자리예요";
+    else reason = "공격과 수비의 균형이 가장 좋은 자리예요";
+    setMsg("힌트 · 표시된 자리 추천 — " + reason);
+  }
+  document.getElementById("hintBtn").addEventListener("click", hint);
 
   document.getElementById("reset").addEventListener("click", reset);
   document.getElementById("level").addEventListener("change", reset);
