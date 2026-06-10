@@ -16,7 +16,7 @@
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <header class="site">
@@ -38,60 +38,61 @@
   <h1>오늘도 한 판,<br>퍼즐마루.</h1>
   <p class="lede">설치도 가입도 없이 브라우저에서 바로. 스도쿠부터 오목까지, 매일 새로운 퍼즐이 기다립니다.</p>
 
-  <div class="fam-grid">
-    <details class="fam">
-      <summary>
+  <div class="fam-wrap">
+    <section class="fam2">
+      <div class="fam2-head">
         <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></span>
-        <span><strong>스도쿠</strong><span class="desc">난이도 4단계 · 매일 바뀌는 오늘의 퍼즐</span></span>
-        <span class="arrow">›</span>
-      </summary>
-      <div class="modes">
-        <a class="hot" href="sudoku.html">바로 하기</a>
-        <a href="guide-sudoku.html">푸는법 공략</a>
+        <div><strong>스도쿠</strong><span class="desc">논리만으로 채우는 숫자 퍼즐</span></div>
       </div>
-    </details>
-    <details class="fam">
-      <summary>
+      <div class="subs">
+        <a class="sub main" href="sudoku.html"><b>클래식</b><span>난이도 4단계 · 메모 지원</span></a>
+        <a class="sub" href="sudoku.html"><b>오늘의 스도쿠</b><span>매일 전원 같은 문제</span></a>
+        <a class="sub" href="guide-sudoku.html"><b>푸는법 공략</b><span>스캐닝부터 X윙까지</span></a>
+      </div>
+    </section>
+    <section class="fam2">
+      <div class="fam2-head">
         <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="13" r="6"/><path d="M12 4v3M12 19v3M3 13h3M18 13h3M5.6 6.6l2.1 2.1M16.3 17.3l2.1 2.1M18.4 6.6l-2.1 2.1M7.7 17.3l-2.1 2.1"/></svg></span>
-        <span><strong>지뢰찾기</strong><span class="desc">초급~고급 · 매일 겨루는 오늘의 보드</span></span>
-        <span class="arrow">›</span>
-      </summary>
-      <div class="modes">
-        <a class="hot" href="minesweeper.html">바로 하기</a>
-        <a href="minesweeper.html">오늘의 보드</a>
-        <a href="guide-minesweeper.html">패턴 공략</a>
+        <div><strong>지뢰찾기</strong><span class="desc">숫자를 읽고 지뢰를 피하는 클래식</span></div>
       </div>
-    </details>
-    <details class="fam">
-      <summary>
+      <div class="subs">
+        <a class="sub main" href="minesweeper.html"><b>클래식</b><span>초급 9×9 ~ 고급 30×16</span></a>
+        <a class="sub" href="minesweeper.html"><b>오늘의 보드</b><span>매일 같은 판으로 기록 경쟁</span></a>
+        <a class="sub" href="guide-minesweeper.html"><b>패턴 공략</b><span>1-2-1 · 코딩(chord)</span></a>
+      </div>
+    </section>
+    <section class="fam2">
+      <div class="fam2-head">
         <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor"/></svg></span>
-        <span><strong>2048</strong><span class="desc">밀고 합쳐서 2048 만들기</span></span>
-        <span class="arrow">›</span>
-      </summary>
-      <div class="modes">
-        <a class="hot" href="2048.html">바로 하기</a>
-        <a href="guide-2048.html">전략 공략</a>
+        <div><strong>2048</strong><span class="desc">밀고 합쳐서 큰 수를 만드는 퍼즐</span></div>
       </div>
-    </details>
-    <details class="fam" open>
-      <summary>
+      <div class="subs">
+        <a class="sub main" href="2048.html"><b>클래식</b><span>방향키·스와이프 · 기록 저장</span></a>
+        <a class="sub" href="guide-2048.html"><b>전략 공략</b><span>구석 고정 · 계단 쌓기</span></a>
+      </div>
+    </section>
+    <section class="fam2">
+      <div class="fam2-head">
         <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="14" r="5" fill="currentColor" stroke="none"/><circle cx="16" cy="9" r="5"/></svg></span>
-        <span><strong>오목</strong><span class="desc">AI 대전부터 친구와 온라인 대국까지 4가지</span></span>
-        <span class="arrow">›</span>
-      </summary>
-      <div class="modes">
-        <a class="hot" href="omok.html">AI 대전</a>
-        <a href="omok-vs.html">친구와 온라인</a>
-        <a href="omok3.html">3인 오목</a>
-        <a href="omok-reverse.html">거꾸로 오목</a>
-        <a href="guide-omok.html">공략</a>
+        <div><strong>오목</strong><span class="desc">혼자서도, 셋이서도, 친구와도</span></div>
       </div>
-    </details>
-    <a class="fam solo" href="stocks.html">
-      <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="M6 15l4-5 3 3 5-7"/></svg></span>
-      <span><strong>모의주식</strong><span class="desc">가상 종목 60일 투자 · 김부장과 수익률 대결</span></span>
-      <span class="arrow">›</span>
-    </a>
+      <div class="subs">
+        <a class="sub main" href="omok.html"><b>AI 대전</b><span>난이도 선택 · 무르기</span></a>
+        <a class="sub" href="omok-vs.html"><b>친구와 온라인<em class="og">오리지널</em></b><span>방 코드로 1:1 실시간 대국</span></a>
+        <a class="sub" href="omok3.html"><b>3인 오목<em class="og">오리지널</em></b><span>나 vs AI 둘의 삼파전</span></a>
+        <a class="sub" href="omok-reverse.html"><b>거꾸로 오목<em class="og">오리지널</em></b><span>5목을 만들면 패배</span></a>
+        <a class="sub" href="guide-omok.html"><b>공략</b><span>열린 3 · 쌍삼 · 수비</span></a>
+      </div>
+    </section>
+    <section class="fam2">
+      <div class="fam2-head">
+        <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="M6 15l4-5 3 3 5-7"/></svg></span>
+        <div><strong>모의주식</strong><span class="desc">가상 시장에서 배우는 투자 감각</span></div>
+      </div>
+      <div class="subs">
+        <a class="sub main" href="stocks.html"><b>60일 챌린지<em class="og">오리지널</em></b><span>뉴스·소문·배당 · 김부장과 수익률 대결</span></a>
+      </div>
+    </section>
   </div>
 
   <div class="ad-slot">AD</div>
