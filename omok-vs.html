@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace("https://puzzlemaru.xyz"+location.pathname+location.search);</script>
+<meta name="google-site-verification" content="qJrb2RbVZTgje-XaXWygP4cYyEMLFqKScbPZ5_QbVhk" />
+<meta name="naver-site-verification" content="3d9b2d6f2631e9f012be372bff5a87845dd4f225" />
+<meta name="google-site-verification" content="1Y8FATV2pnpzcQtXSazVYOD2g1D-5Fil9KC-PvCvXAo" />
+<meta name="naver-site-verification" content="c453a63eb21eed7ee1bade214294b2e5b7919832" />
+<meta name="google-adsense-account" content="ca-pub-6840959424010586">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840959424010586" crossorigin="anonymous"></script>
+<title>오목 온라인 대전 — 코드로 친구와 1:1 | 퍼즐마루</title>
+<meta name="description" content="6자리 방 코드만 공유하면 친구와 바로 1:1 온라인 오목 대국. 설치도 가입도 없이 실시간으로 둡니다. 퍼즐마루 오리지널.">
+<link rel="canonical" href="https://puzzlemaru.xyz/omok-vs.html">
+<link rel="icon" href="favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="style.css">
+<style>
+#boardWrap { display: flex; justify-content: center; }
+#omok {
+  background: #ddba83; border-radius: 8px; touch-action: manipulation;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15); max-width: 100%; height: auto;
+}
+#lobby { max-width: 420px; margin: 24px auto; }
+.lob-card { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 12px; padding: 20px; margin-bottom: 14px; }
+.lob-card h2 { font-size: 17px; margin-bottom: 6px; }
+.lob-card p { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+.lob-card .primary { width: 100%; padding: 12px 0; font-size: 16px; }
+.join-row { display: flex; gap: 8px; }
+.join-row input { flex: 1; padding: 11px 12px; border: 1px solid var(--line-strong); border-radius: 8px; font-size: 17px; font-family: inherit; text-transform: uppercase; letter-spacing: 3px; text-align: center; }
+.code-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); border: 2px solid var(--text); border-radius: 10px; padding: 6px 14px; font-size: 22px; font-weight: 800; letter-spacing: 5px; }
+.code-badge button { font-size: 12.5px; letter-spacing: 0; padding: 5px 10px; }
+#gameArea { display: none; }
+#statusBar { text-align: center; margin: 12px 0 14px; }
+.opp { font-size: 13px; color: var(--muted); }
+.opp i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: 0; }
+.opp i.on { background: var(--success); }
+.opp i.off { background: var(--danger); }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="nav-wrap">
+    <a class="logo" href="index.html">퍼즐<span>마루</span></a>
+    <nav class="main">
+      <a href="sudoku.html">스도쿠</a>
+      <a href="minesweeper.html">지뢰찾기</a>
+      <a href="2048.html">2048</a>
+      <a href="omok.html" class="active">오목</a>
+      <a href="stocks.html">모의주식</a>
+      <a href="guides.html">공략</a>
+      <a href="blog.html">읽을거리</a>
+    </nav>
+  </div>
+</header>
+<main class="game">
+  <div class="game-head">
+    <h1>오목 온라인 대전 <span style="font-size:13px;color:var(--accent);font-weight:700;vertical-align:middle">친구와 1:1</span></h1>
+    <div class="toolbar" id="gameTools" style="display:none">
+    <button id="rematch">재대국</button>
+    <button id="leave">나가기</button>
+  </div>
+  </div>
+
+  <div id="lobby">
+    <div class="lob-card">
+      <h2>방 만들기</h2>
+      <p>6자리 코드가 생성됩니다. 친구에게 코드를 보내면 바로 대국 시작.</p>
+      <button class="primary" id="createBtn">새 방 만들기</button>
+    </div>
+    <div class="lob-card">
+      <h2>코드로 입장</h2>
+      <p>친구에게 받은 코드를 입력하세요.</p>
+      <div class="join-row">
+        <input id="codeInput" maxlength="6" placeholder="ABC123" autocomplete="off">
+        <button class="primary" id="joinBtn" style="width:auto;padding:0 18px">입장</button>
+      </div>
+    </div>
+    <p class="msg" id="lobbyMsg" style="text-align:center"></p>
+  </div>
+
+  <div id="gameArea">
+    <div id="statusBar">
+      <span class="code-badge">방 <b id="codeShow"></b> <button id="copyCode">코드 복사</button></span>
+      <div class="opp" style="margin-top:8px"><i id="oppDot" class="off"></i><span id="oppText">상대 대기 중</span></div>
+    </div>
+    <div id="boardWrap"><canvas id="omok" width="600" height="600" aria-label="온라인 오목판"></canvas></div>
+    <p class="msg" id="msg" style="text-align:center"></p>
+  </div>
+
+  <details class="how">
+  <summary>게임 방법</summary>
+  <h2>친구와 온라인 오목 두는 법</h2>
+  <p>한 명이 "새 방 만들기"로 코드를 만들고, 카톡 등으로 친구에게 코드를 보냅니다. 친구가 이 페이지에서 코드를 입력하면 바로 연결돼요. 방을 만든 사람이 흑(선공)입니다. 다섯 알을 먼저 이으면 승리. 게임이 끝나면 "재대국"으로 같은 방에서 계속 둘 수 있습니다.</p>
+  <p>혼자 연습하려면: <a href="omok.html">AI 오목</a> · <a href="omok3.html">3인 오목</a> · <a href="omok-reverse.html">거꾸로 오목</a></p>
+  </details>
+
+  <div class="ad-slot">AD</div>
+</main>
+<footer class="site">
+  <div><a href="index.html">홈</a> · <a href="omok.html">오목</a> · <a href="about.html">소개·문의</a> · <a href="privacy.html">개인정보처리방침</a></div>
+  <div style="margin-top:8px">© 2026 퍼즐마루</div>
+</footer>
+<script src="confetti.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+(function () {
+  firebase.initializeApp({
+    apiKey: "AIzaSyCezITLXDlOdCPyjZOmnVOaErH3G8FTzDs",
+    authDomain: "puzzlemaru-9f5e2.firebaseapp.com",
+    databaseURL: "https://puzzlemaru-9f5e2-default-rtdb.firebaseio.com",
+    projectId: "puzzlemaru-9f5e2",
+    storageBucket: "puzzlemaru-9f5e2.firebasestorage.app",
+    messagingSenderId: "672944952991",
+    appId: "1:672944952991:web:8b27e0e5fe45a75a7274aa"
+  });
+  const db = firebase.database();
+
+  const N = 15, CV = document.getElementById("omok"), ctx = CV.getContext("2d");
+  const PAD = 30, GAP = (600 - PAD * 2) / (N - 1);
+  let code = null, myP = 0, roomRef = null, roomVal = null;
+  let board, moveList = [], lastMove = null, winner = 0, shownEnd = false;
+
+  function lobbyMsg(t) {
+    const m = document.getElementById("lobbyMsg");
+    m.textContent = t; m.className = "msg lose"; m.style.textAlign = "center";
+  }
+  function setMsg(t, cls) {
+    const m = document.getElementById("msg");
+    m.textContent = t; m.className = "msg " + (cls || ""); m.style.textAlign = "center";
+  }
+
+  function gen() {
+    const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+    let s = "";
+    for (let i = 0; i < 6; i++) s += A[Math.floor(Math.random() * A.length)];
+    return s;
+  }
+
+  function showGame() {
+    document.getElementById("lobby").style.display = "none";
+    document.getElementById("gameArea").style.display = "";
+    document.getElementById("gameTools").style.display = "";
+    document.getElementById("codeShow").textContent = code;
+    draw();
+  }
+  function showLobby(msgText) {
+    document.getElementById("lobby").style.display = "";
+    document.getElementById("gameArea").style.display = "none";
+    document.getElementById("gameTools").style.display = "none";
+    if (msgText) lobbyMsg(msgText);
+  }
+
+  async function createRoom() {
+    code = gen();
+    roomRef = db.ref("rooms/" + code);
+    const snap = await roomRef.get();
+    if (snap.exists()) { roomRef = null; return createRoom(); }
+    myP = 1;
+    await roomRef.set({ created: firebase.database.ServerValue.TIMESTAMP, status: "waiting", hostOnline: true });
+    roomRef.child("hostOnline").onDisconnect().set(false);
+    attach();
+    showGame();
+  }
+
+  async function joinRoom(c) {
+    c = (c || "").trim().toUpperCase();
+    if (c.length !== 6) { lobbyMsg("6자리 코드를 입력하세요."); return; }
+    const ref = db.ref("rooms/" + c);
+    const snap = await ref.get();
+    if (!snap.exists()) { lobbyMsg("방을 찾을 수 없어요. 코드를 다시 확인하세요."); return; }
+    const v = snap.val();
+    if (v.status !== "waiting" && v.guestOnline) { lobbyMsg("이미 두 명이 대국 중인 방입니다."); return; }
+    code = c; roomRef = ref; myP = 2;
+    await ref.update({ status: "playing", guestOnline: true });
+    ref.child("guestOnline").onDisconnect().set(false);
+    attach();
+    showGame();
+  }
+
+  function attach() {
+    shownEnd = false;
+    roomRef.on("value", (snap) => {
+      const v = snap.val();
+      if (!v) { teardown("상대가 방을 닫았습니다."); return; }
+      roomVal = v;
+      rebuild(v.moves || null);
+      updateStatus();
+      draw();
+    });
+  }
+
+  function teardown(msgText) {
+    if (roomRef) roomRef.off();
+    roomRef = null; roomVal = null; code = null; myP = 0;
+    moveList = []; winner = 0;
+    showLobby(msgText);
+  }
+
+  function rebuild(movesObj) {
+    board = Array.from({ length: N }, () => new Array(N).fill(0));
+    moveList = movesObj ? Object.keys(movesObj).sort().map(k => movesObj[k]) : [];
+    winner = 0; lastMove = null;
+    for (const m of moveList) {
+      if (m.r >= 0 && m.r < N && m.c >= 0 && m.c < N && !board[m.r][m.c]) {
+        board[m.r][m.c] = m.p;
+        lastMove = m;
+      }
+    }
+    if (lastMove && isWin(lastMove.r, lastMove.c, lastMove.p)) winner = lastMove.p;
+    if (!winner) shownEnd = false;
+  }
+
+  function turn() { return moveList.length % 2 === 0 ? 1 : 2; }
+
+  function updateStatus() {
+    const oppOn = myP === 1 ? roomVal.guestOnline : roomVal.hostOnline;
+    const dot = document.getElementById("oppDot");
+    const txt = document.getElementById("oppText");
+    if (roomVal.status === "waiting") {
+      dot.className = "off";
+      txt.textContent = "친구가 입장하길 기다리는 중 — 코드를 보내주세요";
+      setMsg("대기 중...");
+      return;
+    }
+    dot.className = oppOn ? "on" : "off";
+    txt.textContent = oppOn ? "상대 접속 중" : "상대 연결 끊김 (재접속 대기)";
+    if (winner) {
+      const win = winner === myP;
+      setMsg(win ? "승리! 다섯 알을 이었습니다." : "패배. 재대국으로 설욕하세요.", win ? "win" : "lose");
+      if (!shownEnd) {
+        shownEnd = true;
+        if (win) confettiBurst();
+        setTimeout(() => showGameOver({
+          kind: win ? "win" : "lose",
+          title: win ? "승리!" : "패배",
+          lines: ["총 " + moveList.length + "수", win ? "친구에게 자랑할 시간" : "재대국 버튼이 기다립니다"],
+          share: win ? "퍼즐마루 온라인 오목에서 승리 (" + moveList.length + "수)\nhttps://puzzlemaru.xyz/omok-vs.html" : null,
+          onRestart: rematch
+        }), 600);
+      }
+      return;
+    }
+    if (moveList.length === N * N) { setMsg("무승부!"); return; }
+    setMsg(turn() === myP ? "당신 차례입니다 (" + (myP === 1 ? "흑" : "백") + ")" : "상대 차례를 기다리는 중...");
+  }
+
+  function rematch() {
+    if (roomRef) roomRef.child("moves").remove();
+  }
+
+  function draw() {
+    if (!board) board = Array.from({ length: N }, () => new Array(N).fill(0));
+    ctx.clearRect(0, 0, 600, 600);
+    const wg = ctx.createLinearGradient(0, 0, 0, 600);
+    wg.addColorStop(0, "#e2c08c"); wg.addColorStop(1, "#caa164");
+    ctx.fillStyle = wg; ctx.fillRect(0, 0, 600, 600);
+    ctx.strokeStyle = "rgba(94,70,38,.55)"; ctx.lineWidth = 1;
+    for (let i = 0; i < N; i++) {
+      ctx.beginPath();
+      ctx.moveTo(PAD, PAD + i * GAP); ctx.lineTo(600 - PAD, PAD + i * GAP); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(PAD + i * GAP, PAD); ctx.lineTo(PAD + i * GAP, 600 - PAD); ctx.stroke();
+    }
+    [[3,3],[3,11],[11,3],[11,11],[7,7]].forEach(([r,c]) => {
+      ctx.beginPath();
+      ctx.arc(PAD + c * GAP, PAD + r * GAP, 4, 0, Math.PI * 2);
+      ctx.fillStyle = "#8a6a3a"; ctx.fill();
+    });
+    for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+      if (!board[r][c]) continue;
+      const x = PAD + c * GAP, y = PAD + r * GAP;
+      const g = ctx.createRadialGradient(x - 4, y - 4, 2, x, y, GAP * 0.45);
+      if (board[r][c] === 1) { g.addColorStop(0, "#52504c"); g.addColorStop(1, "#1d1c1a"); }
+      else { g.addColorStop(0, "#fbf9f3"); g.addColorStop(1, "#d9d4c6"); }
+      ctx.save();
+      ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 5; ctx.shadowOffsetY = 2;
+      ctx.beginPath();
+      ctx.arc(x, y, GAP * 0.42, 0, Math.PI * 2);
+      ctx.fillStyle = g; ctx.fill();
+      ctx.restore();
+    }
+    if (lastMove) {
+      const x = PAD + lastMove.c * GAP, y = PAD + lastMove.r * GAP;
+      ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = lastMove.p === 1 ? "#fbf9f3" : "#c4502e"; ctx.fill();
+    }
+  }
+
+  function lines(r, c) {
+    return [[0,1],[1,0],[1,1],[1,-1]].map(([dr,dc]) => {
+      const cells = [];
+      for (let k = -4; k <= 4; k++) {
+        const nr = r + dr * k, nc = c + dc * k;
+        cells.push(nr >= 0 && nr < N && nc >= 0 && nc < N ? board[nr][nc] : -9);
+      }
+      return cells;
+    });
+  }
+
+  function isWin(r, c, p) {
+    return lines(r, c).some(cells => {
+      let run = 0;
+      for (const v of cells) {
+        run = v === p ? run + 1 : 0;
+        if (run >= 5) return true;
+      }
+      return false;
+    });
+  }
+
+  CV.addEventListener("click", (e) => {
+    if (!roomRef || !roomVal || roomVal.status !== "playing" || winner) return;
+    if (turn() !== myP) { setMsg("상대 차례입니다. 잠시만요."); return; }
+    const rect = CV.getBoundingClientRect();
+    const scale = 600 / rect.width;
+    const x = (e.clientX - rect.left) * scale, y = (e.clientY - rect.top) * scale;
+    const c = Math.round((x - PAD) / GAP), r = Math.round((y - PAD) / GAP);
+    if (r < 0 || r >= N || c < 0 || c >= N || board[r][c]) return;
+    roomRef.child("moves").push({ r: r, c: c, p: myP });
+  });
+
+  document.getElementById("createBtn").addEventListener("click", () => {
+    createRoom().catch(() => lobbyMsg("연결에 실패했어요. 잠시 후 다시 시도해 주세요."));
+  });
+  document.getElementById("joinBtn").addEventListener("click", () => {
+    joinRoom(document.getElementById("codeInput").value).catch(() => lobbyMsg("연결에 실패했어요. 잠시 후 다시 시도해 주세요."));
+  });
+  document.getElementById("codeInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("joinBtn").click();
+  });
+  document.getElementById("copyCode").addEventListener("click", () => {
+    navigator.clipboard.writeText("퍼즐마루 오목 한 판? 방 코드: " + code + "\nhttps://puzzlemaru.xyz/omok-vs.html").then(() => {
+      document.getElementById("copyCode").textContent = "복사 완료!";
+      setTimeout(() => document.getElementById("copyCode").textContent = "코드 복사", 1500);
+    });
+  });
+  document.getElementById("rematch").addEventListener("click", rematch);
+  document.getElementById("leave").addEventListener("click", () => {
+    if (roomRef) {
+      roomRef.off();
+      if (myP === 1) roomRef.remove();
+      else roomRef.update({ guestOnline: false, status: "waiting" });
+    }
+    teardown();
+  });
+})();
+</script>
+</body>
+</html>
