@@ -207,6 +207,12 @@
           const m = document.getElementById("msg");
           m.textContent = "더 움직일 수 없습니다. 게임 오버 — 점수: " + score;
           m.className = "msg lose";
+          setTimeout(() => showGameOver({
+            kind: "lose", title: "게임 오버",
+            lines: ["점수 " + score.toLocaleString(), "최고 기록 " + best.toLocaleString()],
+            share: "퍼즐마루 2048 점수 " + score.toLocaleString() + "\nhttps://puzzlemaru.xyz/2048.html",
+            onRestart: reset
+          }), 600);
         }
       }, 130);
     }

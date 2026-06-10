@@ -31,3 +31,30 @@ window.confettiBurst = function () {
     else cv.remove();
   })();
 };
+
+function showGameOver(opts) {
+  var old = document.getElementById("pmOver");
+  if (old) old.remove();
+  var ov = document.createElement("div");
+  ov.id = "pmOver";
+  ov.className = "pm-overlay";
+  var lines = (opts.lines || []).map(function (l) { return "<div class='pm-line'>" + l + "</div>"; }).join("");
+  ov.innerHTML = "<div class='pm-modal'>" +
+    "<h2 class='" + (opts.kind === "win" ? "pm-win" : opts.kind === "lose" ? "pm-lose" : "") + "'>" + opts.title + "</h2>" +
+    lines +
+    "<div class='pm-btns'>" +
+    (opts.share ? "<button id='pmShare'>결과 복사</button>" : "") +
+    "<button class='primary' id='pmRestart'>다시 하기</button>" +
+    "<button id='pmClose'>닫기</button></div></div>";
+  document.body.appendChild(ov);
+  document.getElementById("pmRestart").addEventListener("click", function () { ov.remove(); if (opts.onRestart) opts.onRestart(); });
+  document.getElementById("pmClose").addEventListener("click", function () { ov.remove(); });
+  ov.addEventListener("click", function (e) { if (e.target === ov) ov.remove(); });
+  if (opts.share) {
+    document.getElementById("pmShare").addEventListener("click", function () {
+      navigator.clipboard.writeText(opts.share).then(function () {
+        document.getElementById("pmShare").textContent = "복사 완료!";
+      });
+    });
+  }
+}

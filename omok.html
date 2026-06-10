@@ -209,10 +209,17 @@
       finished = true;
       setMsg(p === 1 ? "승리! 다섯 알을 이었습니다." : "AI 승리. 새 게임으로 설욕하세요.", p === 1 ? "win" : "lose");
       if (p === 1) confettiBurst();
+      setTimeout(() => showGameOver({
+        kind: p === 1 ? "win" : "lose",
+        title: p === 1 ? "승리!" : "AI 승리",
+        lines: [p === 1 ? "다섯 알을 이었습니다 · 총 " + history.length + "수" : "다음 판엔 상대의 열린 3을 한 박자 빨리 막아보세요"],
+        onRestart: reset
+      }), 600);
       return true;
     }
     if (history.length === N * N) {
       finished = true; setMsg("무승부!");
+      setTimeout(() => showGameOver({ title: "무승부", lines: ["보드가 가득 찼습니다"], onRestart: reset }), 600);
       return true;
     }
     return false;

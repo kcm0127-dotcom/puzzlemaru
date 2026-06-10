@@ -146,3 +146,13 @@ table.rule th { background: var(--surface); }
   .game-head .toolbar { margin-left: 0; }
   main { padding: 28px 16px 56px; }
 }
+
+/* 게임 종료 모달 */
+.pm-overlay { position: fixed; inset: 0; background: rgba(35,34,32,.45); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
+.pm-modal { background: var(--bg); border: 2px solid var(--text); border-radius: 12px; max-width: 400px; width: 100%; padding: 26px 24px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,.25); animation: pmPop .18s ease; }
+@keyframes pmPop { from { transform: scale(.92); opacity: 0; } }
+.pm-modal h2 { font-size: 22px; margin-bottom: 10px; }
+.pm-modal h2.pm-win { color: var(--success); }
+.pm-modal h2.pm-lose { color: var(--danger); }
+.pm-line { font-size: 15px; margin: 4px 0; color: #4a463e; }
+.pm-btns { display: flex; gap: 8px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }

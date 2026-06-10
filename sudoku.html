@@ -294,6 +294,11 @@
       if (mistakes >= 3) {
         done = true; clearInterval(timerInt);
         setMsg("실수 3회로 게임 종료. 새 게임으로 다시 도전하세요.", "lose");
+        setTimeout(() => showGameOver({
+          kind: "lose", title: "실수 3회",
+          lines: ["아쉽지만 여기까지. 힌트 버튼을 활용해 보세요."],
+          onRestart: () => newGame(false)
+        }), 500);
       }
     } else {
       notes[sel].clear();
@@ -301,6 +306,13 @@
         done = true; clearInterval(timerInt);
         setMsg("완성! 기록: " + document.getElementById("timer").textContent, "win");
         confettiBurst();
+        setTimeout(() => showGameOver({
+          kind: "win", title: "퍼즐 완성!",
+          lines: ["기록 " + document.getElementById("timer").textContent,
+                  "난이도 · " + document.getElementById("difficulty").selectedOptions[0].text],
+          share: "퍼즐마루 스도쿠(" + document.getElementById("difficulty").selectedOptions[0].text + ") " + document.getElementById("timer").textContent + " 클리어\nhttps://puzzlemaru.xyz/sudoku.html",
+          onRestart: () => newGame(false)
+        }), 700);
       }
     }
     render();

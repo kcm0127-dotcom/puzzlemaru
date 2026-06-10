@@ -41,6 +41,18 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
 #news div { padding: 7px 12px; border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 8px 8px 0; margin-bottom: 6px; color: #4a463e; }
 #news div.rumor { border-left-color: #8a6a3a; font-style: italic; }
 .disc { max-width: 640px; margin: 18px auto 0; font-size: 12.5px; color: var(--muted); }
+#overlay { position: fixed; inset: 0; background: rgba(35,34,32,.45); display: none; align-items: flex-start; justify-content: center; z-index: 100; padding: 24px 16px; overflow-y: auto; }
+#overlay.show { display: flex; }
+#brief { background: var(--bg); border: 2px solid var(--text); border-radius: 12px; max-width: 480px; width: 100%; padding: 20px 22px; box-shadow: 0 24px 60px rgba(0,0,0,.25); margin-top: 4vh; }
+#brief h2 { font-size: 18px; margin-bottom: 2px; }
+#brief .sub2 { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+#brief .movers { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; font-size: 14px; margin: 10px 0 12px; font-variant-numeric: tabular-nums; }
+#brief .ev { font-size: 14px; padding: 7px 10px; border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 8px 8px 0; margin: 6px 0; }
+#brief .ev.rumor { border-left-color: #8a6a3a; font-style: italic; }
+#brief .kim { display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line-strong); }
+#brief .kim .who { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+#brief .kim .bubble { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; padding: 8px 12px; font-size: 13.5px; }
+#brief button.primary { margin-top: 14px; width: 100%; }
 </style>
 </head>
 <body>
@@ -79,6 +91,8 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
   <div id="news"></div>
   <p class="msg" id="msg"></p>
   <p style="text-align:left"><button id="shareBtn" style="display:none">결과 복사하기</button></p>
+
+  <div id="overlay"><div id="brief"></div></div>
 
   <details class="how">
   <summary>게임 방법 · 팁</summary>
@@ -124,6 +138,7 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
   let day, cash, hold, prices, sel = 0, finished;
   let regime, regimeLeft, rumor;            // rumor: {i, resolveDay}
   let rCash, rHold;                          // 김부장
+  let dayEvents = [], suppressBrief = false;
 
   function randn() {
     let u = 0, v = 0;
@@ -168,6 +183,7 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
   }
 
   function pushNews(t, cls) {
+    dayEvents.push({ t: t, cls: cls });
     const n = document.getElementById("news");
     const d = document.createElement("div");
     if (cls) d.className = cls;
@@ -221,6 +237,7 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
   function nextDay() {
     if (finished) return;
     day++;
+    dayEvents = [];
     // 시장 분위기 전환
     if (--regimeLeft <= 0) {
       const others = REGIMES.filter(r => r.key !== regime.key);
@@ -274,6 +291,7 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
       }
     });
     rivalTrade();
+    if (!suppressBrief && day < DAYS) showBriefing("DAY " + day, dayEvents);
     // 종료
     if (day >= DAYS) {
       finished = true;
@@ -294,6 +312,14 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
       sb.onclick = () => {
         navigator.clipboard.writeText(share).then(() => { sb.textContent = "복사 완료!"; setTimeout(() => sb.textContent = "결과 복사하기", 1500); });
       };
+      setTimeout(() => showGameOver({
+        kind: ret > rr ? "win" : "lose",
+        title: "칭호: " + title,
+        lines: ["60일 최종 수익률 " + (ret >= 0 ? "+" : "") + ret.toFixed(1) + "%", vs,
+                "최고 기록 " + Math.max(ret, isFinite(best) ? best : ret).toFixed(1) + "%"],
+        share: share,
+        onRestart: reset
+      }), 500);
     }
     render();
   }
@@ -385,7 +411,7 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
       "<h2>" + s.name + " <span style='font-weight:400;font-size:13px;color:var(--muted)'>" + s.sector + (s.div ? " · 배당주" : "") + "</span></h2>" +
       "<div class='meta'>현재가 <b>" + fmt(cur(sel)) + "원</b>" +
       (h.qty ? " · 보유 " + h.qty + "주 · 평균단가 " + fmt(h.avg) + "원" : "") +
-      " · 현금 " + fmt(cash) + "원</div>" +
+      " · 현금 " + fmt(cash) + "원 · 최대 <b>" + fmt(Math.floor(cash / cur(sel))) + "주</b> 매수 가능</div>" +
       "<canvas id='chart'></canvas>" +
       "<div id='trade'><input id='qty' type='number' min='1' placeholder='수량' inputmode='numeric'>" +
       "<button class='primary' id='buyBtn'>매수</button>" +
@@ -404,11 +430,57 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
     });
   }
 
+  const KIM_SVG = '<svg width="44" height="44" viewBox="0 0 48 48" aria-hidden="true" style="flex:none"><circle cx="24" cy="24" r="22" fill="#f3f1ea" stroke="#232220" stroke-width="1.5"/><path d="M10 22c0-9 6-15 14-15s14 6 14 15" fill="none" stroke="#232220" stroke-width="1.5"/><path d="M11 21c0-2.5 1-5.5 2.6-8M37 21c0-2.5-1-5.5-2.6-8" stroke="#232220" stroke-width="3" stroke-linecap="round"/><circle cx="17.5" cy="25" r="4.2" fill="none" stroke="#232220" stroke-width="1.5"/><circle cx="30.5" cy="25" r="4.2" fill="none" stroke="#232220" stroke-width="1.5"/><path d="M21.7 25h4.6" stroke="#232220" stroke-width="1.5"/><path d="M20 32.5h8" stroke="#8a6a3a" stroke-width="2.5" stroke-linecap="round"/><path d="M19.5 37c1.5 1 3 1.5 4.5 1.5s3-.5 4.5-1.5" fill="none" stroke="#232220" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  const QUIPS = {
+    bull: ["이런 장에선 눈 감고 사도 오릅니다. 아마도요.", "지금 현금 들고 있는 사람이 제일 손해라니까.", "내 포트폴리오 봤어? 다 계획이 있다니까."],
+    side: ["요즘 장은 영 재미가 없네. 점심이나 먹으러 가지.", "횡보장엔 수수료만 번다는 말이 있지. 내 얘기는 아니고.", "기다림도 투자라는데, 난 도저히 못 기다리겠어."],
+    bear: ["나는 어제 다 팔았어. 떨어지는 칼날은 잡는 게 아니야.", "이럴 때일수록 배당주가 효자라던데...", "괜찮아. 잃은 게 아니라 아직 안 판 것뿐이야."],
+    rumor: ["그 소문 들었어? 난 못 들은 걸로 했어. ...아직은.", "소문에 사서 뉴스에 팔라던데, 지금이 소문 구간인가?"]
+  };
+  function kimQuip(events) {
+    const hasRumor = events.some(e => e.cls === "rumor");
+    const pool = (hasRumor && Math.random() < 0.6) ? QUIPS.rumor : QUIPS[regime.key];
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  function showBriefing(label, events) {
+    const ov = document.getElementById("overlay");
+    let movers = "";
+    STOCKS.forEach((s, i) => {
+      const chg = (cur(i) / prev(i) - 1) * 100;
+      movers += "<div>" + s.name + " <span class='" + (chg >= 0 ? "up" : "down") + "'>" + (chg >= 0 ? "▲" : "▼") + Math.abs(chg).toFixed(1) + "%</span></div>";
+    });
+    const evs = events.length
+      ? events.map(e => "<div class='ev " + (e.cls || "") + "'>" + e.t + "</div>").join("")
+      : "<div class='ev'>오늘은 별다른 소식이 없는 조용한 하루입니다.</div>";
+    const ret = (totalAssets() / START_CASH - 1) * 100, rr = rivalRet();
+    document.getElementById("brief").innerHTML =
+      "<h2>" + label + " 아침 브리핑</h2>" +
+      "<div class='sub2'>" + regime.label + " · 내 수익률 " + (ret >= 0 ? "+" : "") + ret.toFixed(1) + "% · 김부장 " + (rr >= 0 ? "+" : "") + rr.toFixed(1) + "%</div>" +
+      "<div class='movers'>" + movers + "</div>" + evs +
+      "<div class='kim'>" + KIM_SVG + "<div><div class='who'>옆자리 김부장</div><div class='bubble'>" + kimQuip(events) + "</div></div></div>" +
+      "<button class='primary' id='briefClose'>장 시작 ▸</button>";
+    ov.classList.add("show");
+    document.getElementById("briefClose").addEventListener("click", () => ov.classList.remove("show"));
+  }
+  document.getElementById("overlay").addEventListener("click", (e) => {
+    if (e.target.id === "overlay") e.target.classList.remove("show");
+  });
+
   document.getElementById("nextDay").addEventListener("click", nextDay);
-  document.getElementById("skip5").addEventListener("click", () => { for (let k = 0; k < 5 && !finished; k++) nextDay(); });
+  document.getElementById("skip5").addEventListener("click", () => {
+    suppressBrief = true;
+    const acc = [], startD = day + 1;
+    for (let k = 0; k < 5 && !finished; k++) { nextDay(); acc.push(...dayEvents); }
+    suppressBrief = false;
+    if (!finished) showBriefing("DAY " + startD + "–" + day, acc);
+  });
   document.getElementById("reset").addEventListener("click", reset);
   document.addEventListener("keydown", (e) => {
-    if (e.code === "Space" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "BUTTON") {
+    if (e.code !== "Space") return;
+    const ov = document.getElementById("overlay");
+    if (ov.classList.contains("show")) { e.preventDefault(); ov.classList.remove("show"); return; }
+    if (document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "BUTTON") {
       e.preventDefault(); nextDay();
     }
   });

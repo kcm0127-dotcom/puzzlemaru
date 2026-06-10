@@ -159,6 +159,11 @@
     const m = document.getElementById("msg");
     m.textContent = "펑. 지뢰를 밟았습니다 — 새 게임으로 다시 도전하세요.";
     m.className = "msg lose";
+    setTimeout(() => showGameOver({
+      kind: "lose", title: "펑!",
+      lines: ["지뢰를 밟았습니다 · " + seconds + "초", "막혔을 땐 힌트 버튼이 확정 칸을 찾아줘요"],
+      onRestart: init
+    }), 600);
   }
 
   function checkWin() {
@@ -168,6 +173,12 @@
       m.textContent = "승리! 기록: " + seconds + "초";
       m.className = "msg win";
       confettiBurst();
+      setTimeout(() => showGameOver({
+        kind: "win", title: "승리!",
+        lines: ["기록 " + seconds + "초", document.getElementById("level").selectedOptions[0].text],
+        share: "퍼즐마루 지뢰찾기(" + document.getElementById("level").selectedOptions[0].text.split(" ")[0] + ") " + seconds + "초 클리어\nhttps://puzzlemaru.xyz/minesweeper.html",
+        onRestart: init
+      }), 700);
     }
   }
 
