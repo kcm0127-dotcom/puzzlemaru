@@ -81,7 +81,10 @@
 
   function draw() {
     ctx.clearRect(0, 0, 600, 600);
-    ctx.strokeStyle = "#8a6a3a"; ctx.lineWidth = 1;
+    const wg = ctx.createLinearGradient(0, 0, 0, 600);
+    wg.addColorStop(0, "#eec88f"); wg.addColorStop(1, "#dcab68");
+    ctx.fillStyle = wg; ctx.fillRect(0, 0, 600, 600);
+    ctx.strokeStyle = "rgba(120,86,40,.55)"; ctx.lineWidth = 1;
     for (let i = 0; i < N; i++) {
       ctx.beginPath();
       ctx.moveTo(PAD, PAD + i * GAP); ctx.lineTo(600 - PAD, PAD + i * GAP); ctx.stroke();
@@ -99,10 +102,12 @@
       const g = ctx.createRadialGradient(x - 4, y - 4, 2, x, y, GAP * 0.45);
       if (board[r][c] === 1) { g.addColorStop(0, "#555"); g.addColorStop(1, "#111"); }
       else { g.addColorStop(0, "#fff"); g.addColorStop(1, "#d8d8d8"); }
+      ctx.save();
+      ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 5; ctx.shadowOffsetY = 2;
       ctx.beginPath();
       ctx.arc(x, y, GAP * 0.42, 0, Math.PI * 2);
       ctx.fillStyle = g; ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,.25)"; ctx.stroke();
+      ctx.restore();
     }
     const last = history[history.length - 1];
     if (last) {
@@ -183,7 +188,7 @@
     draw();
     if (isWin(r, c, p)) {
       finished = true;
-      setMsg(p === 1 ? "🎉 승리! 다섯 알을 이었습니다." : "😢 AI 승리. 새 게임으로 설욕하세요!", p === 1 ? "win" : "lose");
+      setMsg(p === 1 ? "승리! 다섯 알을 이었습니다." : "AI 승리. 새 게임으로 설욕하세요.", p === 1 ? "win" : "lose");
       if (p === 1) confettiBurst();
       return true;
     }

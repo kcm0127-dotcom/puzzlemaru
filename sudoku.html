@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="style.css">
 <style>
 #board {
+  box-shadow: 0 10px 28px rgba(35,34,32,.10);
   display: grid; grid-template-columns: repeat(9, 1fr);
   max-width: 480px; margin: 0 auto; user-select: none;
   border: 2px solid var(--text); border-radius: 6px; overflow: hidden;
@@ -39,7 +40,7 @@
   display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
   max-width: 480px; margin: 16px auto 0;
 }
-#numpad button { font-size: 20px; padding: 12px 0; font-weight: 600; }
+#numpad button { font-size: 20px; padding: 12px 0; font-weight: 600; background: var(--surface); }
 #numpad button.small { font-size: 13px; font-weight: 400; }
 #numpad button.note-on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 </style>
@@ -68,8 +69,8 @@
       <option value="expert">고급</option>
     </select>
     <button class="primary" id="newGame">새 게임</button>
-    <button id="dailyBtn">📅 오늘의 스도쿠</button>
-    <span class="stat">⏱ <b id="timer">00:00</b></span>
+    <button id="dailyBtn">오늘의 스도쿠</button>
+    <span class="stat">시간 <b id="timer">00:00</b></span>
     <span class="stat">실수 <b id="mistakes">0</b>/3</span>
   </div>
   </div>
@@ -217,7 +218,7 @@
       notes = Array.from({ length: 81 }, () => new Set());
       sel = -1; mistakes = 0; done = false;
       document.getElementById("mistakes").textContent = "0";
-      msg.textContent = daily ? "📅 오늘의 스도쿠입니다. 행운을 빌어요!" : "";
+      msg.textContent = daily ? "오늘의 스도쿠입니다. 행운을 빌어요." : "";
       startTimer();
       render();
     }, 30);
@@ -279,13 +280,13 @@
       document.getElementById("mistakes").textContent = mistakes;
       if (mistakes >= 3) {
         done = true; clearInterval(timerInt);
-        setMsg("😢 실수 3회! 게임 종료. 새 게임으로 다시 도전하세요.", "lose");
+        setMsg("실수 3회로 게임 종료. 새 게임으로 다시 도전하세요.", "lose");
       }
     } else {
       notes[sel].clear();
       if (user.every((x, i) => x === solution[i])) {
         done = true; clearInterval(timerInt);
-        setMsg("🎉 완성! 기록: " + document.getElementById("timer").textContent, "win");
+        setMsg("완성! 기록: " + document.getElementById("timer").textContent, "win");
         confettiBurst();
       }
     }
@@ -309,7 +310,7 @@
   erase.addEventListener("click", () => input(0));
   pad.appendChild(erase);
   const noteBtn = document.createElement("button");
-  noteBtn.textContent = "✏️ 메모"; noteBtn.className = "small";
+  noteBtn.textContent = "메모"; noteBtn.className = "small";
   noteBtn.addEventListener("click", () => {
     noteMode = !noteMode;
     noteBtn.classList.toggle("note-on", noteMode);

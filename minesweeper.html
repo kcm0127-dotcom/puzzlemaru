@@ -17,12 +17,15 @@
 }
 .sq {
   width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 700; cursor: pointer;
-  background: #cdd5e0; border: 1px solid #b6c0cf;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  background: #ccd6e3;
+  border: 3px solid; border-color: #e8eef6 #97a3b6 #97a3b6 #e8eef6;
 }
+.sq svg { display: block; }
+.sq.bad { color: #b3361f; font-size: 14px; }
 @media (max-width: 600px) { .sq { width: 30px; height: 30px; } }
-.sq.open { background: var(--surface); border: 1px solid var(--border); cursor: default; }
-.sq.boom { background: #fecaca; }
+.sq.open { background: var(--surface); border: 1px solid #e3e0d5; cursor: default; }
+.sq.boom { background: #f3c2b5; }
 .c1{color:#2563eb}.c2{color:#16a34a}.c3{color:#dc2626}.c4{color:#7c3aed}
 .c5{color:#b45309}.c6{color:#0e7490}.c7{color:#1f2937}.c8{color:#6b7280}
 </style>
@@ -50,8 +53,8 @@
       <option value="e">고급 30×16 · 지뢰 99</option>
     </select>
     <button class="primary" id="reset">새 게임</button>
-    <span class="stat">🚩 <b id="flags">10</b></span>
-    <span class="stat">⏱ <b id="timer">0</b>초</span>
+    <span class="stat">깃발 <b id="flags">10</b></span>
+    <span class="stat">시간 <b id="timer">0</b>초</span>
   </div>
   </div>
   <p class="hint">PC는 우클릭, 모바일은 길게 눌러 깃발을 꽂으세요</p>
@@ -75,6 +78,8 @@
 <script src="confetti.js"></script>
 <script>
 (function () {
+  const MINE_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" aria-label="지뢰"><circle cx="12" cy="12" r="5.5" fill="#2b2b2b"/><path d="M12 3.5v4M12 16.5v4M3.5 12h4M16.5 12h4M6.4 6.4l2.4 2.4M15.2 15.2l2.4 2.4M17.6 6.4l-2.4 2.4M8.8 15.2l-2.4 2.4" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round"/><circle cx="10.2" cy="10.2" r="1.4" fill="#8a8a8a"/></svg>';
+  const FLAG_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" aria-label="깃발"><path d="M7.5 21V4" stroke="#5b6472" stroke-width="2" stroke-linecap="round"/><path d="M7.5 4.5l9 3.2-9 3.2z" fill="#c4502e"/></svg>';
   const LEVELS = { b: [9, 9, 10], i: [16, 16, 40], e: [16, 30, 99] };
   let R, C, M, mines, openArr, flagArr, started, finished, timerInt, seconds, opened;
 
@@ -126,7 +131,7 @@
     openArr[i] = true; opened++;
     const el = sq(i);
     el.classList.add("open");
-    if (mines[i]) { el.textContent = "💣"; el.classList.add("boom"); lose(); return; }
+    if (mines[i]) { el.innerHTML = MINE_SVG; el.classList.add("boom"); lose(); return; }
     const n = count(i);
     if (n > 0) { el.textContent = n; el.classList.add("c" + n); }
     else neighbors(i).forEach(reveal);
@@ -137,11 +142,11 @@
   function lose() {
     finished = true; clearInterval(timerInt);
     for (let i = 0; i < R * C; i++) {
-      if (mines[i] && !flagArr[i]) { const el = sq(i); el.classList.add("open"); el.textContent = "💣"; }
-      if (!mines[i] && flagArr[i]) { sq(i).textContent = "❌"; }
+      if (mines[i] && !flagArr[i]) { const el = sq(i); el.classList.add("open"); el.innerHTML = MINE_SVG; }
+      if (!mines[i] && flagArr[i]) { const el = sq(i); el.textContent = "✕"; el.classList.add("bad"); }
     }
     const m = document.getElementById("msg");
-    m.textContent = "💥 펑! 새 게임으로 다시 도전하세요.";
+    m.textContent = "펑. 지뢰를 밟았습니다 — 새 게임으로 다시 도전하세요.";
     m.className = "msg lose";
   }
 
@@ -149,7 +154,7 @@
     if (opened === R * C - M && !finished) {
       finished = true; clearInterval(timerInt);
       const m = document.getElementById("msg");
-      m.textContent = "🎉 승리! 기록: " + seconds + "초";
+      m.textContent = "승리! 기록: " + seconds + "초";
       m.className = "msg win";
       confettiBurst();
     }
@@ -178,7 +183,7 @@
   function toggleFlag(i) {
     if (finished || openArr[i]) return;
     flagArr[i] = !flagArr[i];
-    sq(i).textContent = flagArr[i] ? "🚩" : "";
+    sq(i).innerHTML = flagArr[i] ? FLAG_SVG : "";
     const used = flagArr.filter(Boolean).length;
     document.getElementById("flags").textContent = M - used;
   }

@@ -11,14 +11,16 @@
 <style>
 #stage {
   position: relative; max-width: 420px; margin: 0 auto;
-  background: #bbada0; border-radius: 10px; padding: 10px; touch-action: none;
+  background: #b3a394; border-radius: 14px; padding: 10px; touch-action: none;
+  box-shadow: 0 10px 28px rgba(35,34,32,.14);
 }
 #cells { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 #cells div { aspect-ratio: 1; background: rgba(238,228,218,.35); border-radius: 6px; }
 #tiles { position: absolute; inset: 10px; }
 .tile {
   position: absolute; display: flex; align-items: center; justify-content: center;
-  font-weight: 700; border-radius: 6px;
+  font-weight: 700; border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,.14);
   transition: left .12s ease, top .12s ease;
   width: var(--ts); height: var(--ts);
 }
@@ -177,7 +179,7 @@
         if (target.v === 2048 && !won) {
           won = true;
           const m = document.getElementById("msg");
-          m.textContent = "🎉 2048 달성! 계속해서 더 큰 타일에 도전하세요.";
+          m.textContent = "2048 달성! 계속해서 더 큰 타일에 도전하세요.";
           m.className = "msg win";
           confettiBurst();
         }
@@ -193,7 +195,7 @@
         if (!canMove()) {
           over = true;
           const m = document.getElementById("msg");
-          m.textContent = "😢 더 움직일 수 없어요. 게임 오버! 점수: " + score;
+          m.textContent = "더 움직일 수 없습니다. 게임 오버 — 점수: " + score;
           m.className = "msg lose";
         }
       }, 130);
