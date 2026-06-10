@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스도쿠 무료 게임 — 오늘의 퍼즐, 난이도 4단계 | 퍼즐마루</title>
+<meta name="description" content="설치 없이 브라우저에서 바로 하는 무료 스도쿠. 입문·초급·중급·고급 난이도와 매일 바뀌는 오늘의 스도쿠를 제공합니다. 메모 기능과 타이머 포함.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧩</text></svg>">
+<link rel="stylesheet" href="style.css">
+<style>
+#board {
+  display: grid; grid-template-columns: repeat(9, 1fr);
+  max-width: 480px; margin: 0 auto; user-select: none;
+  border: 2px solid var(--text); border-radius: 6px; overflow: hidden;
+  background: var(--surface);
+}
+.cell {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-size: clamp(16px, 4.2vw, 24px); cursor: pointer; position: relative;
+  border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.cell:nth-child(9n) { border-right: none; }
+.cell.box-r { border-right: 2px solid var(--text); }
+.cell.box-b { border-bottom: 2px solid var(--text); }
+.cell.given { font-weight: 700; }
+.cell.sel { background: var(--accent-soft); }
+.cell.peer { background: #f0f4ff; }
+.cell.same { background: #e3ebff; }
+.cell.user { color: var(--accent); }
+.cell.wrong { color: var(--danger); }
+.cell .notes {
+  position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3,1fr);
+  font-size: clamp(7px, 1.6vw, 10px); color: var(--muted); line-height: 1;
+}
+.cell .notes span { display: flex; align-items: center; justify-content: center; }
+#numpad {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+  max-width: 480px; margin: 16px auto 0;
+}
+#numpad button { font-size: 20px; padding: 12px 0; font-weight: 600; }
+#numpad button.small { font-size: 13px; font-weight: 400; }
+#numpad button.note-on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="nav-wrap">
+    <a class="logo" href="index.html">퍼즐<span>마루</span></a>
+    <nav class="main">
+      <a href="sudoku.html" class="active">스도쿠</a>
+      <a href="minesweeper.html">지뢰찾기</a>
+      <a href="2048.html">2048</a>
+      <a href="omok.html">오목</a>
+      <a href="guide-sudoku.html">공략</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <h1>스도쿠 무료 게임</h1>
+  <p class="sub">가로·세로·3×3 박스에 1~9를 겹치지 않게 채우세요. 규칙이 헷갈리면 <a href="guide-sudoku.html">스도쿠 푸는법</a>을 참고하세요.</p>
+
+  <div class="toolbar">
+    <select id="difficulty">
+      <option value="easy">입문 (쉬움)</option>
+      <option value="medium" selected>초급</option>
+      <option value="hard">중급</option>
+      <option value="expert">고급</option>
+    </select>
+    <button class="primary" id="newGame">새 게임</button>
+    <button id="dailyBtn">📅 오늘의 스도쿠</button>
+    <span class="stat">⏱ <b id="timer">00:00</b></span>
+    <span class="stat">실수 <b id="mistakes">0</b>/3</span>
+  </div>
+
+  <div id="board" aria-label="스도쿠 보드"></div>
+
+  <div id="numpad"></div>
+  <p class="msg" id="msg"></p>
+
+  <div class="ad-slot">광고 영역 (AdSense)</div>
+
+  <h2>스도쿠 게임 방법</h2>
+  <p>비어 있는 칸을 눌러 선택한 뒤 숫자 패드를 누르면 입력됩니다. 연필(✏️) 모드를 켜면 후보 숫자를 메모할 수 있어요. 실수가 3번 누적되면 게임이 종료됩니다. 오늘의 스도쿠는 매일 자정에 바뀌며 모든 방문자에게 같은 문제가 출제됩니다.</p>
+  <p>처음이라면 입문 난이도로 감을 잡고, <a href="guide-sudoku.html">스도쿠 공식 정리 가이드</a>에서 스캐닝과 후보 소거법을 익히면 중급 이상도 어렵지 않게 풀 수 있습니다.</p>
+</main>
+<footer class="site">
+  <div><a href="index.html">홈</a> · <a href="guide-sudoku.html">스도쿠 공략</a> · <a href="privacy.html">개인정보처리방침</a></div>
+  <div style="margin-top:8px">© 2026 퍼즐마루</div>
+</footer>
+<script src="confetti.js"></script>
+<script>
+(function () {
+  const N = 9;
+  let solution = [], puzzle = [], user = [], notes = [], given = [];
+  let sel = -1, noteMode = false, mistakes = 0, done = false;
+  let timerInt = null, seconds = 0;
+
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  let rng = Math.random;
+
+  function shuffled(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function valid(g, idx, v) {
+    const r = Math.floor(idx / 9), c = idx % 9;
+    for (let i = 0; i < 9; i++) {
+      if (g[r * 9 + i] === v || g[i * 9 + c] === v) return false;
+    }
+    const br = r - (r % 3), bc = c - (c % 3);
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+      if (g[(br + i) * 9 + bc + j] === v) return false;
+    }
+    return true;
+  }
+
+  function fill(g, idx) {
+    if (idx === 81) return true;
+    if (g[idx] !== 0) return fill(g, idx + 1);
+    for (const v of shuffled([1,2,3,4,5,6,7,8,9])) {
+      if (valid(g, idx, v)) {
+        g[idx] = v;
+        if (fill(g, idx + 1)) return true;
+        g[idx] = 0;
+      }
+    }
+    return false;
+  }
+
+  function countSolutions(g, idx, cap) {
+    if (idx === 81) return 1;
+    if (g[idx] !== 0) return countSolutions(g, idx + 1, cap);
+    let cnt = 0;
+    for (let v = 1; v <= 9; v++) {
+      if (valid(g, idx, v)) {
+        g[idx] = v;
+        cnt += countSolutions(g, idx + 1, cap - cnt);
+        g[idx] = 0;
+        if (cnt >= cap) return cnt;
+      }
+    }
+    return cnt;
+  }
+
+  function generate(clues) {
+    const g = new Array(81).fill(0);
+    fill(g, 0);
+    const sol = g.slice();
+    const order = shuffled([...Array(81).keys()]);
+    let removed = 0, target = 81 - clues;
+    for (const idx of order) {
+      if (removed >= target) break;
+      const bak = g[idx];
+      g[idx] = 0;
+      const test = g.slice();
+      if (countSolutions(test, 0, 2) !== 1) {
+        g[idx] = bak;
+      } else {
+        removed++;
+      }
+    }
+    return { puzzle: g, solution: sol };
+  }
+
+  const CLUES = { easy: 40, medium: 34, hard: 28, expert: 24 };
+
+  function startTimer() {
+    clearInterval(timerInt);
+    seconds = 0;
+    updateTimer();
+    timerInt = setInterval(() => { seconds++; updateTimer(); }, 1000);
+  }
+  function updateTimer() {
+    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    document.getElementById("timer").textContent = m + ":" + s;
+  }
+
+  function newGame(daily) {
+    if (daily) {
+      const d = new Date();
+      const kst = new Date(d.getTime() + (9 * 60 + d.getTimezoneOffset()) * 60000);
+      const seed = kst.getFullYear() * 10000 + (kst.getMonth() + 1) * 100 + kst.getDate();
+      rng = mulberry32(seed);
+      document.getElementById("difficulty").value = "medium";
+    } else {
+      rng = Math.random;
+    }
+    const diff = document.getElementById("difficulty").value;
+    const msg = document.getElementById("msg");
+    msg.textContent = "퍼즐 생성 중...";
+    msg.className = "msg";
+    setTimeout(() => {
+      const res = generate(CLUES[diff]);
+      puzzle = res.puzzle; solution = res.solution;
+      user = puzzle.slice();
+      given = puzzle.map(v => v !== 0);
+      notes = Array.from({ length: 81 }, () => new Set());
+      sel = -1; mistakes = 0; done = false;
+      document.getElementById("mistakes").textContent = "0";
+      msg.textContent = daily ? "📅 오늘의 스도쿠입니다. 행운을 빌어요!" : "";
+      startTimer();
+      render();
+    }, 30);
+  }
+
+  function render() {
+    const board = document.getElementById("board");
+    board.innerHTML = "";
+    const selVal = sel >= 0 ? user[sel] : 0;
+    for (let i = 0; i < 81; i++) {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      const r = Math.floor(i / 9), c = i % 9;
+      if (c === 2 || c === 5) cell.classList.add("box-r");
+      if (r === 2 || r === 5) cell.classList.add("box-b");
+      if (given[i]) cell.classList.add("given");
+      if (i === sel) cell.classList.add("sel");
+      else if (sel >= 0) {
+        const sr = Math.floor(sel / 9), sc = sel % 9;
+        if (r === sr || c === sc ||
+           (Math.floor(r/3) === Math.floor(sr/3) && Math.floor(c/3) === Math.floor(sc/3))) {
+          cell.classList.add("peer");
+        }
+      }
+      if (user[i] !== 0) {
+        cell.textContent = user[i];
+        if (!given[i]) {
+          cell.classList.add(user[i] === solution[i] ? "user" : "wrong");
+        }
+        if (selVal !== 0 && user[i] === selVal && i !== sel) cell.classList.add("same");
+      } else if (notes[i].size > 0) {
+        const nd = document.createElement("div");
+        nd.className = "notes";
+        for (let v = 1; v <= 9; v++) {
+          const s = document.createElement("span");
+          s.textContent = notes[i].has(v) ? v : "";
+          nd.appendChild(s);
+        }
+        cell.appendChild(nd);
+      }
+      cell.addEventListener("click", () => { sel = i; render(); });
+      board.appendChild(cell);
+    }
+  }
+
+  function input(v) {
+    if (done || sel < 0 || given[sel]) return;
+    if (v === 0) {
+      user[sel] = 0; notes[sel].clear(); render(); return;
+    }
+    if (noteMode) {
+      if (user[sel] !== 0) return;
+      notes[sel].has(v) ? notes[sel].delete(v) : notes[sel].add(v);
+      render(); return;
+    }
+    user[sel] = v;
+    if (v !== solution[sel]) {
+      mistakes++;
+      document.getElementById("mistakes").textContent = mistakes;
+      if (mistakes >= 3) {
+        done = true; clearInterval(timerInt);
+        setMsg("😢 실수 3회! 게임 종료. 새 게임으로 다시 도전하세요.", "lose");
+      }
+    } else {
+      notes[sel].clear();
+      if (user.every((x, i) => x === solution[i])) {
+        done = true; clearInterval(timerInt);
+        setMsg("🎉 완성! 기록: " + document.getElementById("timer").textContent, "win");
+      }
+    }
+    render();
+  }
+
+  function setMsg(t, cls) {
+    const m = document.getElementById("msg");
+    m.textContent = t; m.className = "msg " + (cls || "");
+  }
+
+  const pad = document.getElementById("numpad");
+  for (let v = 1; v <= 9; v++) {
+    const b = document.createElement("button");
+    b.textContent = v;
+    b.addEventListener("click", () => input(v));
+    pad.appendChild(b);
+  }
+  const erase = document.createElement("button");
+  erase.textContent = "지우기"; erase.className = "small";
+  erase.addEventListener("click", () => input(0));
+  pad.appendChild(erase);
+  const noteBtn = document.createElement("button");
+  noteBtn.textContent = "✏️ 메모"; noteBtn.className = "small";
+  noteBtn.addEventListener("click", () => {
+    noteMode = !noteMode;
+    noteBtn.classList.toggle("note-on", noteMode);
+  });
+  pad.appendChild(noteBtn);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key >= "1" && e.key <= "9") input(Number(e.key));
+    if (e.key === "Backspace" || e.key === "Delete") input(0);
+    if (sel >= 0) {
+      const r = Math.floor(sel / 9), c = sel % 9;
+      if (e.key === "ArrowUp" && r > 0) { sel -= 9; render(); e.preventDefault(); }
+      if (e.key === "ArrowDown" && r < 8) { sel += 9; render(); e.preventDefault(); }
+      if (e.key === "ArrowLeft" && c > 0) { sel--; render(); e.preventDefault(); }
+      if (e.key === "ArrowRight" && c < 8) { sel++; render(); e.preventDefault(); }
+    }
+  });
+
+  document.getElementById("newGame").addEventListener("click", () => newGame(false));
+  document.getElementById("dailyBtn").addEventListener("click", () => newGame(true));
+  document.getElementById("difficulty").addEventListener("change", () => newGame(false));
+
+  newGame(false);
+})();
+</script>
+</body>
+</html>

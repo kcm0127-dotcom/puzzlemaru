@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>오목 무료 게임 — AI와 온라인 오목 두기 | 퍼즐마루</title>
+<meta name="description" content="설치 없이 AI와 바로 두는 무료 오목. 15×15 바둑판에서 다섯 알을 먼저 이으면 승리. 난이도 선택 가능, 무르기 지원.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧩</text></svg>">
+<link rel="stylesheet" href="style.css">
+<style>
+#boardWrap { display: flex; justify-content: center; }
+#omok {
+  background: #e8c180; border-radius: 8px; touch-action: manipulation;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15); max-width: 100%; height: auto;
+}
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="nav-wrap">
+    <a class="logo" href="index.html">퍼즐<span>마루</span></a>
+    <nav class="main">
+      <a href="sudoku.html">스도쿠</a>
+      <a href="minesweeper.html">지뢰찾기</a>
+      <a href="2048.html">2048</a>
+      <a href="omok.html" class="active">오목</a>
+      <a href="guide-sudoku.html">공략</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <h1>오목 — AI 대전</h1>
+  <p class="sub">당신은 흑돌(선공)입니다. 가로·세로·대각선으로 다섯 알을 먼저 이으면 승리!</p>
+
+  <div class="toolbar">
+    <select id="level">
+      <option value="1">쉬움</option>
+      <option value="2" selected>보통</option>
+    </select>
+    <button class="primary" id="reset">새 게임</button>
+    <button id="undo">무르기</button>
+  </div>
+
+  <div id="boardWrap"><canvas id="omok" width="600" height="600" aria-label="오목판"></canvas></div>
+  <p class="msg" id="msg" style="text-align:center"></p>
+
+  <div class="ad-slot">광고 영역 (AdSense)</div>
+
+  <h2>오목 기본 전략</h2>
+  <p>공격과 수비의 핵심은 "열린 3"과 "4"입니다. 양쪽이 모두 뚫린 3목(열린 3)을 만들면 상대는 반드시 막아야 하고, 동시에 두 개의 열린 3을 만들면(쌍삼) 사실상 승리합니다. 반대로 상대의 돌이 세 개 이어지면 그 즉시 막는 습관을 들이세요.</p>
+</main>
+<footer class="site">
+  <div><a href="index.html">홈</a> · <a href="privacy.html">개인정보처리방침</a></div>
+  <div style="margin-top:8px">© 2026 퍼즐마루</div>
+</footer>
+<script src="confetti.js"></script>
+<script>
+(function () {
+  const N = 15, CV = document.getElementById("omok"), ctx = CV.getContext("2d");
+  const PAD = 30, GAP = (600 - PAD * 2) / (N - 1);
+  let board, history, finished, thinking;
+
+  function reset() {
+    board = Array.from({ length: N }, () => new Array(N).fill(0));
+    history = []; finished = false; thinking = false;
+    setMsg("당신 차례입니다 (흑)");
+    draw();
+  }
+
+  function setMsg(t, cls) {
+    const m = document.getElementById("msg");
+    m.textContent = t; m.className = "msg " + (cls || "");
+    m.style.textAlign = "center";
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, 600, 600);
+    ctx.strokeStyle = "#8a6a3a"; ctx.lineWidth = 1;
+    for (let i = 0; i < N; i++) {
+      ctx.beginPath();
+      ctx.moveTo(PAD, PAD + i * GAP); ctx.lineTo(600 - PAD, PAD + i * GAP); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(PAD + i * GAP, PAD); ctx.lineTo(PAD + i * GAP, 600 - PAD); ctx.stroke();
+    }
+    [[3,3],[3,11],[11,3],[11,11],[7,7]].forEach(([r,c]) => {
+      ctx.beginPath();
+      ctx.arc(PAD + c * GAP, PAD + r * GAP, 4, 0, Math.PI * 2);
+      ctx.fillStyle = "#8a6a3a"; ctx.fill();
+    });
+    for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+      if (!board[r][c]) continue;
+      const x = PAD + c * GAP, y = PAD + r * GAP;
+      const g = ctx.createRadialGradient(x - 4, y - 4, 2, x, y, GAP * 0.45);
+      if (board[r][c] === 1) { g.addColorStop(0, "#555"); g.addColorStop(1, "#111"); }
+      else { g.addColorStop(0, "#fff"); g.addColorStop(1, "#d8d8d8"); }
+      ctx.beginPath();
+      ctx.arc(x, y, GAP * 0.42, 0, Math.PI * 2);
+      ctx.fillStyle = g; ctx.fill();
+      ctx.strokeStyle = "rgba(0,0,0,.25)"; ctx.stroke();
+    }
+    const last = history[history.length - 1];
+    if (last) {
+      const x = PAD + last[1] * GAP, y = PAD + last[0] * GAP;
+      ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = board[last[0]][last[1]] === 1 ? "#fff" : "#e11"; ctx.fill();
+    }
+  }
+
+  function lines(r, c) {
+    return [[0,1],[1,0],[1,1],[1,-1]].map(([dr,dc]) => {
+      const cells = [];
+      for (let k = -4; k <= 4; k++) {
+        const nr = r + dr * k, nc = c + dc * k;
+        cells.push(nr >= 0 && nr < N && nc >= 0 && nc < N ? board[nr][nc] : -9);
+      }
+      return cells;
+    });
+  }
+
+  function isWin(r, c, p) {
+    return lines(r, c).some(cells => {
+      let run = 0;
+      for (const v of cells) {
+        run = v === p ? run + 1 : 0;
+        if (run >= 5) return true;
+      }
+      return false;
+    });
+  }
+
+  function scoreCell(r, c, p) {
+    // pattern scoring for placing p at (r,c)
+    board[r][c] = p;
+    let total = 0;
+    for (const cells of lines(r, c)) {
+      const s = cells.map(v => v === p ? "X" : v === 0 ? "." : "O").join("");
+      if (s.includes("XXXXX")) total += 1000000;
+      else if (s.includes(".XXXX.")) total += 50000;
+      else if (s.includes("XXXX.") || s.includes(".XXXX")) total += 8000;
+      else if (s.includes(".XXX.")) total += 4000;
+      else if (s.includes("XXX.") || s.includes(".XXX")) total += 500;
+      else if (s.includes(".XX.")) total += 300;
+      else if (s.includes("XX")) total += 50;
+      else total += 10;
+    }
+    board[r][c] = 0;
+    return total;
+  }
+
+  function aiMove() {
+    const hard = document.getElementById("level").value === "2";
+    let bestScore = -1, best = null;
+    const candidates = [];
+    for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+      if (board[r][c]) continue;
+      // only consider cells near existing stones
+      let near = false;
+      for (let dr = -2; dr <= 2 && !near; dr++) for (let dc = -2; dc <= 2; dc++) {
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < N && nc >= 0 && nc < N && board[nr][nc]) { near = true; break; }
+      }
+      if (near) candidates.push([r, c]);
+    }
+    if (!candidates.length) return [7, 7];
+    for (const [r, c] of candidates) {
+      const attack = scoreCell(r, c, 2);
+      const defend = scoreCell(r, c, 1);
+      const s = hard ? attack + defend * 0.9 : attack * 0.8 + defend * 0.6 + Math.random() * 800;
+      if (s > bestScore) { bestScore = s; best = [r, c]; }
+    }
+    return best;
+  }
+
+  function place(r, c, p) {
+    board[r][c] = p;
+    history.push([r, c]);
+    draw();
+    if (isWin(r, c, p)) {
+      finished = true;
+      setMsg(p === 1 ? "🎉 승리! 다섯 알을 이었습니다." : "😢 AI 승리. 새 게임으로 설욕하세요!", p === 1 ? "win" : "lose");
+      return true;
+    }
+    if (history.length === N * N) {
+      finished = true; setMsg("무승부!");
+      return true;
+    }
+    return false;
+  }
+
+  CV.addEventListener("click", (e) => {
+    if (finished || thinking) return;
+    const rect = CV.getBoundingClientRect();
+    const scale = 600 / rect.width;
+    const x = (e.clientX - rect.left) * scale, y = (e.clientY - rect.top) * scale;
+    const c = Math.round((x - PAD) / GAP), r = Math.round((y - PAD) / GAP);
+    if (r < 0 || r >= N || c < 0 || c >= N || board[r][c]) return;
+    if (place(r, c, 1)) return;
+    thinking = true;
+    setMsg("AI가 생각 중...");
+    setTimeout(() => {
+      const [ar, ac] = aiMove();
+      thinking = false;
+      if (!place(ar, ac, 2)) setMsg("당신 차례입니다 (흑)");
+    }, 200);
+  });
+
+  document.getElementById("undo").addEventListener("click", () => {
+    if (thinking || history.length < 2) return;
+    for (let i = 0; i < 2; i++) {
+      const [r, c] = history.pop();
+      board[r][c] = 0;
+    }
+    finished = false;
+    setMsg("당신 차례입니다 (흑)");
+    draw();
+  });
+
+  document.getElementById("reset").addEventListener("click", reset);
+  document.getElementById("level").addEventListener("change", reset);
+  reset();
+})();
+</script>
+</body>
+</html>

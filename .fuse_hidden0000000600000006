@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>지뢰찾기 무료 게임 — 초급·중급·고급 | 퍼즐마루</title>
+<meta name="description" content="추억의 지뢰찾기를 브라우저에서 무료로. 초급(9×9)부터 고급(30×16)까지, 첫 클릭 안전 보장. 모바일은 길게 눌러 깃발을 꽂으세요.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧩</text></svg>">
+<link rel="stylesheet" href="style.css">
+<style>
+#wrap { overflow-x: auto; padding-bottom: 8px; }
+#grid {
+  display: grid; gap: 0; margin: 0 auto; width: max-content;
+  border: 2px solid var(--text); border-radius: 6px; overflow: hidden; user-select: none;
+  touch-action: manipulation;
+}
+.sq {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  background: #cdd5e0; border: 1px solid #b6c0cf;
+}
+@media (max-width: 600px) { .sq { width: 30px; height: 30px; } }
+.sq.open { background: var(--surface); border: 1px solid var(--border); cursor: default; }
+.sq.boom { background: #fecaca; }
+.c1{color:#2563eb}.c2{color:#16a34a}.c3{color:#dc2626}.c4{color:#7c3aed}
+.c5{color:#b45309}.c6{color:#0e7490}.c7{color:#1f2937}.c8{color:#6b7280}
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="nav-wrap">
+    <a class="logo" href="index.html">퍼즐<span>마루</span></a>
+    <nav class="main">
+      <a href="sudoku.html">스도쿠</a>
+      <a href="minesweeper.html" class="active">지뢰찾기</a>
+      <a href="2048.html">2048</a>
+      <a href="omok.html">오목</a>
+      <a href="guide-sudoku.html">공략</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <h1>지뢰찾기 무료 게임</h1>
+  <p class="sub">숫자는 주변 8칸에 숨은 지뢰 개수예요. PC는 우클릭, 모바일은 길게 눌러 🚩 깃발을 꽂으세요. 숫자 읽는 법은 <a href="guide-minesweeper.html">지뢰찾기 공략</a>에서!</p>
+
+  <div class="toolbar">
+    <select id="level">
+      <option value="b" selected>초급 9×9 · 지뢰 10</option>
+      <option value="i">중급 16×16 · 지뢰 40</option>
+      <option value="e">고급 30×16 · 지뢰 99</option>
+    </select>
+    <button class="primary" id="reset">새 게임</button>
+    <span class="stat">🚩 <b id="flags">10</b></span>
+    <span class="stat">⏱ <b id="timer">0</b>초</span>
+  </div>
+
+  <div id="wrap"><div id="grid" aria-label="지뢰찾기 보드"></div></div>
+  <p class="msg" id="msg"></p>
+
+  <div class="ad-slot">광고 영역 (AdSense)</div>
+
+  <h2>지뢰찾기 규칙</h2>
+  <p>모든 안전한 칸을 열면 승리합니다. 첫 클릭은 항상 안전하니 마음 놓고 시작하세요. 열린 숫자 주변에 깃발을 정확히 다 꽂았다면, 그 숫자를 다시 클릭해 나머지 칸을 한 번에 열 수 있습니다(코딩, chord). 더 빠르게 푸는 패턴은 <a href="guide-minesweeper.html">공략 가이드</a>에 정리해 두었어요.</p>
+</main>
+<footer class="site">
+  <div><a href="index.html">홈</a> · <a href="guide-minesweeper.html">지뢰찾기 공략</a> · <a href="privacy.html">개인정보처리방침</a></div>
+  <div style="margin-top:8px">© 2026 퍼즐마루</div>
+</footer>
+<script src="confetti.js"></script>
+<script>
+(function () {
+  const LEVELS = { b: [9, 9, 10], i: [16, 16, 40], e: [16, 30, 99] };
+  let R, C, M, mines, openArr, flagArr, started, finished, timerInt, seconds, opened;
+
+  function init() {
+    [R, C, M] = LEVELS[document.getElementById("level").value];
+    mines = new Array(R * C).fill(false);
+    openArr = new Array(R * C).fill(false);
+    flagArr = new Array(R * C).fill(false);
+    started = false; finished = false; opened = 0; seconds = 0;
+    clearInterval(timerInt);
+    document.getElementById("timer").textContent = "0";
+    document.getElementById("flags").textContent = M;
+    document.getElementById("msg").textContent = "";
+    document.getElementById("msg").className = "msg";
+    const grid = document.getElementById("grid");
+    grid.style.gridTemplateColumns = `repeat(${C}, auto)`;
+    grid.innerHTML = "";
+    for (let i = 0; i < R * C; i++) {
+      const d = document.createElement("div");
+      d.className = "sq";
+      d.dataset.i = i;
+      grid.appendChild(d);
+    }
+  }
+
+  function neighbors(i) {
+    const r = Math.floor(i / C), c = i % C, out = [];
+    for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+      if (!dr && !dc) continue;
+      const nr = r + dr, nc = c + dc;
+      if (nr >= 0 && nr < R && nc >= 0 && nc < C) out.push(nr * C + nc);
+    }
+    return out;
+  }
+
+  function placeMines(safe) {
+    const banned = new Set([safe, ...neighbors(safe)]);
+    let placed = 0;
+    while (placed < M) {
+      const i = Math.floor(Math.random() * R * C);
+      if (!mines[i] && !banned.has(i)) { mines[i] = true; placed++; }
+    }
+  }
+
+  function count(i) { return neighbors(i).filter(n => mines[n]).length; }
+
+  function reveal(i) {
+    if (openArr[i] || flagArr[i]) return;
+    openArr[i] = true; opened++;
+    const el = sq(i);
+    el.classList.add("open");
+    if (mines[i]) { el.textContent = "💣"; el.classList.add("boom"); lose(); return; }
+    const n = count(i);
+    if (n > 0) { el.textContent = n; el.classList.add("c" + n); }
+    else neighbors(i).forEach(reveal);
+  }
+
+  function sq(i) { return document.querySelector(`[data-i="${i}"]`); }
+
+  function lose() {
+    finished = true; clearInterval(timerInt);
+    for (let i = 0; i < R * C; i++) {
+      if (mines[i] && !flagArr[i]) { const el = sq(i); el.classList.add("open"); el.textContent = "💣"; }
+      if (!mines[i] && flagArr[i]) { sq(i).textContent = "❌"; }
+    }
+    const m = document.getElementById("msg");
+    m.textContent = "💥 펑! 새 게임으로 다시 도전하세요.";
+    m.className = "msg lose";
+  }
+
+  function checkWin() {
+    if (opened === R * C - M && !finished) {
+      finished = true; clearInterval(timerInt);
+      const m = document.getElementById("msg");
+      m.textContent = "🎉 승리! 기록: " + seconds + "초";
+      m.className = "msg win";
+    }
+  }
+
+  function clickCell(i) {
+    if (finished) return;
+    if (!started) {
+      started = true;
+      placeMines(i);
+      timerInt = setInterval(() => {
+        seconds++; document.getElementById("timer").textContent = seconds;
+      }, 1000);
+    }
+    if (openArr[i]) {
+      const n = count(i);
+      const ns = neighbors(i);
+      const fl = ns.filter(x => flagArr[x]).length;
+      if (n > 0 && fl === n) ns.forEach(x => { if (!flagArr[x] && !openArr[x]) reveal(x); });
+    } else {
+      reveal(i);
+    }
+    if (!finished) checkWin();
+  }
+
+  function toggleFlag(i) {
+    if (finished || openArr[i]) return;
+    flagArr[i] = !flagArr[i];
+    sq(i).textContent = flagArr[i] ? "🚩" : "";
+    const used = flagArr.filter(Boolean).length;
+    document.getElementById("flags").textContent = M - used;
+  }
+
+  const grid = document.getElementById("grid");
+  grid.addEventListener("click", (e) => {
+    const t = e.target.closest(".sq");
+    if (t) clickCell(Number(t.dataset.i));
+  });
+  grid.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    const t = e.target.closest(".sq");
+    if (t) toggleFlag(Number(t.dataset.i));
+  });
+  let pressTimer = null, longPressed = false;
+  grid.addEventListener("touchstart", (e) => {
+    const t = e.target.closest(".sq");
+    if (!t) return;
+    longPressed = false;
+    pressTimer = setTimeout(() => {
+      longPressed = true;
+      toggleFlag(Number(t.dataset.i));
+      if (navigator.vibrate) navigator.vibrate(40);
+    }, 380);
+  }, { passive: true });
+  grid.addEventListener("touchend", (e) => {
+    clearTimeout(pressTimer);
+    if (longPressed) e.preventDefault();
+  });
+  grid.addEventListener("touchmove", () => clearTimeout(pressTimer), { passive: true });
+
+  document.getElementById("reset").addEventListener("click", init);
+  document.getElementById("level").addEventListener("change", init);
+  init();
+})();
+</script>
+</body>
+</html>

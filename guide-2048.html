@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2048 공략 — 구석 전략과 계단 쌓기 | 퍼즐마루</title>
+<meta name="description" content="2048에서 점수가 막히는 이유는 큰 타일이 가운데로 나오기 때문. 구석 고정, 계단 쌓기, 금지 방향 규칙까지 2048 핵심 전략을 정리했습니다.">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site">
+  <div class="nav-wrap">
+    <a class="logo" href="index.html">퍼즐<span>마루</span></a>
+    <nav class="main">
+      <a href="sudoku.html">스도쿠</a>
+      <a href="minesweeper.html">지뢰찾기</a>
+      <a href="2048.html">2048</a>
+      <a href="omok.html">오목</a>
+      <a href="guides.html" class="active">공략</a>
+    </nav>
+  </div>
+</header>
+<main class="guide">
+  <h1>2048 전략 가이드</h1>
+  <p class="sub">운이 아니라 규칙 세 개로 2048까지 갑니다</p>
+
+  <h2>1. 가장 큰 타일은 구석에</h2>
+  <p>모든 전략의 출발점입니다. 가장 큰 타일을 한쪽 구석(예: 왼쪽 아래)에 두고, 게임이 끝날 때까지 거기서 움직이지 않게 합니다. 큰 타일이 가운데로 나오는 순간 보드가 네 조각으로 갈라져서 합치기가 어려워져요.</p>
+
+  <h2>2. 계단(스네이크) 쌓기</h2>
+  <p>구석의 큰 타일 옆으로 그다음 크기의 타일들을 내림차순으로 이어 붙입니다. 아래 그림처럼 한 줄을 계단으로 만들어 두면, 새로 만든 타일이 연쇄적으로 합쳐지며 올라갑니다.</p>
+  <div class="diagram">
+    <div class="mini" style="grid-template-columns:repeat(4,38px)">
+      <div class="o">&nbsp;</div><div class="o">&nbsp;</div><div class="o">&nbsp;</div><div class="o">2</div>
+      <div class="o">8</div><div class="o">4</div><div class="o">4</div><div class="o">2</div>
+      <div>128</div><div>64</div><div>32</div><div class="o">16</div>
+    </div>
+    <div class="cap">맨 아랫줄을 128-64-32-16 내림차순으로 유지. 16 자리에서 16을 만들면 32→64→128로 연쇄 합치기가 일어난다</div>
+  </div>
+
+  <h2>3. 금지 방향 규칙</h2>
+  <p>큰 타일을 왼쪽 아래에 뒀다면, <b>위로 미는 것을 금지</b>하세요. 정확히는 "아랫줄이 꽉 차 있지 않을 때 위로 밀기"가 금지입니다. 아랫줄에 빈칸이 있는 상태에서 위로 밀면 새 타일이 그 빈칸에 떨어져 계단이 무너집니다. 기본 이동은 왼쪽·아래 두 방향, 보조로 오른쪽, 위는 최후의 수단입니다.</p>
+
+  <h2>4. 흔한 실수</h2>
+  <ul>
+    <li>점수에 끌려서 보이는 대로 합치기 — 합치기 전에 "이 합치기가 계단을 유지하는가"를 먼저 보세요.</li>
+    <li>빈칸이 많을 때 방심하기 — 빈칸이 절반 이하로 줄면 그때부터는 한 수 한 수가 치명적입니다.</li>
+    <li>2048 직전에 서두르기 — 1024 두 개를 만들 공간 계획 없이 합치다가 가장자리에서 고립되는 경우가 많아요.</li>
+  </ul>
+
+  <div class="tip">연습 팁: 처음에는 "왼쪽 → 아래 → 왼쪽 → 아래"만 반복해 보세요. 이 두 방향 반복만으로도 512까지는 어렵지 않게 도달하고, 계단 감각이 몸에 붙습니다.</div>
+
+  <div class="ad-slot">AD</div>
+
+  <p>이제 직접 해 볼 차례예요. <a href="2048.html" style="text-decoration:underline"><b>→ 2048 무료로 하러 가기</b></a></p>
+</main>
+<footer class="site">
+  <div>
+    <a href="index.html">홈</a>
+    <a href="guides.html">공략 모음</a>
+    <a href="privacy.html">개인정보처리방침</a>
+    <span style="float:right">© 2026 퍼즐마루</span>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스도쿠 푸는법 총정리 — 규칙부터 고급 공식까지 | 퍼즐마루</title>
+<meta name="description" content="스도쿠 푸는법을 처음부터 차근차근. 기본 규칙, 스캐닝, 후보 숫자 메모, 숨은 싱글, X윙까지 단계별 공식을 예시와 함께 정리했습니다.">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site">
+  <div class="nav-wrap">
+    <a class="logo" href="index.html">퍼즐<span>마루</span></a>
+    <nav class="main">
+      <a href="sudoku.html">스도쿠</a>
+      <a href="minesweeper.html">지뢰찾기</a>
+      <a href="2048.html">2048</a>
+      <a href="omok.html">오목</a>
+      <a href="guides.html" class="active">공략</a>
+    </nav>
+  </div>
+</header>
+<main class="guide">
+  <h1>스도쿠 푸는법 총정리</h1>
+  <p class="sub">규칙부터 고급 공식까지, 이 글 하나로 끝내는 스도쿠 가이드</p>
+
+  <h2>1. 기본 규칙</h2>
+  <p>스도쿠는 9×9 보드를 숫자 1~9로 채우는 퍼즐입니다. 규칙은 단 세 가지예요.</p>
+  <ul>
+    <li>각 <b>가로줄</b>에 1~9가 한 번씩만 들어간다</li>
+    <li>각 <b>세로줄</b>에 1~9가 한 번씩만 들어간다</li>
+    <li>각 <b>3×3 박스</b>에 1~9가 한 번씩만 들어간다</li>
+  </ul>
+  <p>찍기는 필요 없습니다. 제대로 만든 스도쿠는 답이 하나뿐이고, 논리만으로 반드시 풀립니다.</p>
+
+  <h2>2. 스캐닝 — 가장 먼저 쓰는 기술</h2>
+  <p>특정 숫자 하나를 정해서(예: 9) 보드 전체에서 그 숫자가 들어갈 수 있는 자리를 훑는 방법입니다. 어떤 3×3 박스에서 9가 들어갈 수 있는 칸이 단 하나라면, 그 칸은 9로 확정입니다. 퍼즐을 시작하면 1부터 9까지 차례로 스캐닝하는 것만으로 쉬움~초급 문제의 절반이 풀립니다.</p>
+  <div class="diagram">
+    <div class="sgrid" style="grid-template-rows:repeat(3,30px)"><div class="hl">9</div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class="">5</div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class="hl">9</div><div class=""></div><div class=""></div><div class="">3</div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class="">1</div><div class="">7</div><div class="tgt">9</div></div>
+    <div class="cap">1·2번째 줄에 이미 9가 있으니(노란색) 오른쪽 박스의 9는 셋째 줄로 한정 → 빈칸이 하나뿐이라 초록 칸이 9로 확정</div>
+  </div>
+  <div class="tip">💡 비어 있는 칸이 가장 적은 줄·박스부터 보세요. 후보가 적을수록 확정이 빨리 나옵니다.</div>
+
+  <h2>3. 후보 숫자 메모 (연필 표시)</h2>
+  <p>중급부터는 머리로만 풀기 어렵습니다. 각 빈칸에 들어갈 수 있는 후보 숫자를 작게 메모하세요. <a href="sudoku.html">퍼즐마루 스도쿠</a>에서는 ✏️ 메모 버튼을 켜면 후보를 적을 수 있습니다.</p>
+  <h3>네이키드 싱글 (Naked Single)</h3>
+  <p>후보를 다 적었을 때 후보가 하나뿐인 칸은 그 숫자로 확정입니다.</p>
+  <h3>히든 싱글 (Hidden Single)</h3>
+  <p>어떤 칸의 후보가 여러 개라도, 그 줄·박스 안에서 특정 숫자를 놓을 수 있는 칸이 그 칸뿐이라면 확정입니다. 스캐닝의 메모 버전이라고 생각하면 돼요.</p>
+
+  <h2>4. 중급 공식</h2>
+  <h3>네이키드 페어 (Naked Pair)</h3>
+  <p>같은 줄(또는 박스)의 두 칸이 똑같이 후보 두 개(예: 3과 7)만 갖고 있다면, 그 줄의 다른 칸에서는 3과 7을 후보에서 지울 수 있습니다.</p>
+  <h3>포인팅 페어 (Pointing Pair)</h3>
+  <p>어떤 박스 안에서 특정 숫자의 후보가 한 줄에만 몰려 있다면, 그 줄의 박스 바깥 칸에서는 그 숫자를 지울 수 있습니다.</p>
+
+  <h2>5. 고급 공식 — X윙 (X-Wing)</h2>
+  <p>두 가로줄에서 특정 숫자의 후보가 정확히 같은 두 세로줄 위치에만 존재한다면, 네 칸이 직사각형(X자)을 이룹니다. 이때 그 두 세로줄의 다른 칸에서는 해당 숫자를 후보에서 지울 수 있습니다. 고급 난이도에서 막혔을 때 찾아보세요.</p>
+  <div class="diagram">
+    <div class="sgrid" style="grid-template-rows:repeat(4,30px)"><div class=""></div><div class="xw">9</div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class="xw">9</div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class="xw">9</div><div class=""></div><div class=""></div><div class=""></div><div class=""></div><div class="xw">9</div><div class=""></div><div class=""></div></div>
+    <div class="cap">X윙: 두 가로줄에서 9의 후보(파란색)가 같은 두 세로줄에만 있으면, 그 세로줄의 다른 칸에서 9를 지울 수 있음</div>
+  </div>
+
+  <h2>6. 난이도별 추천 전략</h2>
+  <table class="rule">
+    <tr><th>난이도</th><th>필요한 기술</th></tr>
+    <tr><td>입문·초급</td><td>스캐닝, 네이키드 싱글</td></tr>
+    <tr><td>중급</td><td>+ 히든 싱글, 네이키드 페어</td></tr>
+    <tr><td>고급</td><td>+ 포인팅 페어, X윙</td></tr>
+  </table>
+
+  <div class="ad-slot">AD</div>
+
+  <p>이제 직접 풀어볼 차례예요. <a href="sudoku.html"><b>→ 스도쿠 무료로 풀러 가기</b></a> (매일 바뀌는 오늘의 퍼즐도 있어요)</p>
+</main>
+<footer class="site">
+  <div><a href="index.html">홈</a> · <a href="sudoku.html">스도쿠</a> · <a href="privacy.html">개인정보처리방침</a></div>
+  <div style="margin-top:8px">© 2026 퍼즐마루</div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>지뢰찾기 공략 — 숫자 읽는 법과 필수 패턴 | 퍼즐마루</title>
+<meta name="description" content="지뢰찾기 숫자의 의미부터 1-2-1, 1-2-2-1 필수 패턴, 코딩(chord) 테크닉까지. 초보자가 고급 보드를 깰 수 있게 되는 공략 가이드.">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site">
+  <div class="nav-wrap">
+    <a class="logo" href="index.html">퍼즐<span>마루</span></a>
+    <nav class="main">
+      <a href="sudoku.html">스도쿠</a>
+      <a href="minesweeper.html">지뢰찾기</a>
+      <a href="2048.html">2048</a>
+      <a href="omok.html">오목</a>
+      <a href="guides.html" class="active">공략</a>
+    </nav>
+  </div>
+</header>
+<main class="guide">
+  <h1>지뢰찾기 공략 가이드</h1>
+  <p class="sub">숫자만 제대로 읽으면 찍을 일이 거의 없습니다</p>
+
+  <h2>1. 숫자의 의미</h2>
+  <p>열린 칸의 숫자는 <b>그 칸을 둘러싼 8칸에 숨어 있는 지뢰의 개수</b>입니다. 숫자 1 주변에 닫힌 칸이 하나뿐이라면 그 칸은 100% 지뢰입니다. 반대로 숫자 1 주변에서 지뢰를 이미 찾았다면, 나머지 닫힌 칸은 전부 안전합니다.</p>
+  <div class="diagram">
+    <div class="mini" style="grid-template-columns:repeat(3,38px)">
+      <div class="o">&nbsp;</div><div class="o">&nbsp;</div><div class="o">&nbsp;</div>
+      <div class="o">&nbsp;</div><div class="o c1">1</div><div class="mine">💣</div>
+      <div class="o">&nbsp;</div><div class="o">&nbsp;</div><div></div>
+    </div>
+    <div class="cap">숫자 1 주변의 닫힌 칸이 하나뿐 → 그 칸은 100% 지뢰</div>
+  </div>
+  <div class="tip">💡 기본 원리는 두 가지뿐: ① 숫자 = 남은 닫힌 칸 수 → 전부 지뢰. ② 숫자 = 이미 꽂은 깃발 수 → 나머지 전부 안전.</div>
+
+  <h2>2. 필수 패턴</h2>
+  <h3>1-1 패턴</h3>
+  <p>벽을 따라 1, 1이 나란히 있고 닫힌 칸이 위쪽 한 줄이라면, 첫 번째 1이 가리키는 지뢰 후보와 두 번째 1의 후보가 겹칩니다. 이때 두 번째 1의 바깥쪽 칸은 안전합니다.</p>
+  <h3>1-2-1 패턴</h3>
+  <p>벽을 따라 1, 2, 1이 이어지면 지뢰는 양쪽 1의 위(대각선이 아닌 바로 위) 두 칸에 있고, 2의 위 칸은 안전합니다. 외우면 즉시 두 칸을 깃발, 한 칸을 오픈할 수 있는 효자 패턴이에요.</p>
+  <div class="diagram">
+    <div class="mini" style="grid-template-columns:repeat(3,38px)">
+      <div class="mine">💣</div><div class="safe">✓</div><div class="mine">💣</div>
+      <div class="o c1">1</div><div class="o c2">2</div><div class="o c1">1</div>
+    </div>
+    <div class="cap">1-2-1 패턴: 양쪽 1의 바로 위가 지뢰, 2의 위는 안전</div>
+  </div>
+  <h3>1-2-2-1 패턴</h3>
+  <p>1, 2, 2, 1이 이어지면 지뢰는 가운데 2와 2의 위 두 칸입니다. 양쪽 1의 위 칸은 안전합니다.</p>
+  <div class="diagram">
+    <div class="mini" style="grid-template-columns:repeat(4,38px)">
+      <div class="safe">✓</div><div class="mine">💣</div><div class="mine">💣</div><div class="safe">✓</div>
+      <div class="o c1">1</div><div class="o c2">2</div><div class="o c2">2</div><div class="o c1">1</div>
+    </div>
+    <div class="cap">1-2-2-1 패턴: 가운데 두 칸이 지뢰, 양쪽 끝 위는 안전</div>
+  </div>
+
+  <h2>3. 코딩(chord)으로 속도 올리기</h2>
+  <p>숫자 주변에 그 숫자만큼 깃발을 다 꽂았다면, 그 숫자를 클릭해 보세요. 나머지 닫힌 칸이 한꺼번에 열립니다. 기록 단축의 핵심 테크닉입니다. <a href="minesweeper.html">퍼즐마루 지뢰찾기</a>에서도 지원해요.</p>
+
+  <h2>4. 확률 싸움이 될 때</h2>
+  <p>고급 보드 후반에는 논리만으로 확정할 수 없는 50:50 상황이 가끔 나옵니다. 이때는 미루지 말고 빨리 선택하는 게 낫습니다. 단, 선택 전에 보드 전체의 남은 지뢰 수를 세어보면 한쪽 확률이 더 높은 경우가 많아요.</p>
+
+  <div class="ad-slot">AD</div>
+
+  <p>패턴을 외웠다면 실전이에요. <a href="minesweeper.html"><b>→ 지뢰찾기 무료로 하러 가기</b></a></p>
+</main>
+<footer class="site">
+  <div><a href="index.html">홈</a> · <a href="minesweeper.html">지뢰찾기</a> · <a href="privacy.html">개인정보처리방침</a></div>
+  <div style="margin-top:8px">© 2026 퍼즐마루</div>
+</footer>
+</body>
+</html>
