@@ -146,15 +146,6 @@ table.rule th { background: var(--surface); }
   main { padding: 28px 16px 56px; }
 }
 
-/* 게임 종료 모달 */
-.pm-overlay { position: fixed; inset: 0; background: rgba(35,34,32,.45); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
-.pm-modal { background: var(--bg); border: 2px solid var(--text); border-radius: 12px; max-width: 400px; width: 100%; padding: 26px 24px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,.25); animation: pmPop .18s ease; }
-@keyframes pmPop { from { transform: scale(.92); opacity: 0; } }
-.pm-modal h2 { font-size: 22px; margin-bottom: 10px; }
-.pm-modal h2.pm-win { color: var(--success); }
-.pm-modal h2.pm-lose { color: var(--danger); }
-.pm-line { font-size: 15px; margin: 4px 0; color: #4a463e; }
-.pm-btns { display: flex; gap: 8px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
 
 /* 모바일 길게 누르기 시 텍스트 선택/돋보기 메뉴 방지 (게임 보드) */
 #grid, #grid *, #board, #board *, #stage, #stage *, #omok, #numpad, #numpad * {
@@ -162,3 +153,21 @@ table.rule th { background: var(--surface); }
   user-select: none;
   -webkit-touch-callout: none;
 }
+
+/* 게임 종료 모달 */
+.pm-overlay { position: fixed; inset: 0; background: rgba(35,34,32,.5); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; animation: pmFade .15s ease; }
+@keyframes pmFade { from { opacity: 0; } }
+.pm-modal { background: var(--bg); border: 2px solid var(--text); border-radius: 16px; max-width: 360px; width: 100%; padding: 28px 24px 20px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,.3); animation: pmPop .22s cubic-bezier(.34,1.56,.64,1); }
+@keyframes pmPop { from { transform: scale(.85); opacity: 0; } }
+.pm-ico { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; background: var(--accent-soft); }
+.pm-ico.lose { background: #f3ece9; }
+.pm-ico.draw { background: #f3f1ea; }
+.pm-modal h2 { font-size: 23px; letter-spacing: -0.01em; margin-bottom: 4px; }
+.pm-modal h2.pm-win { color: var(--success); }
+.pm-modal h2.pm-lose { color: var(--danger); }
+.pm-stats { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; padding: 12px 14px; margin-top: 14px; }
+.pm-line { font-size: 15.5px; font-weight: 600; margin: 5px 0; color: #4a463e; }
+.pm-btns { margin-top: 16px; }
+.pm-btns .pm-big { width: 100%; padding: 12px 0; font-size: 16px; }
+.pm-row { display: flex; gap: 8px; justify-content: center; margin-top: 8px; }
+.pm-row button { flex: 1; }

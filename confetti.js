@@ -35,17 +35,25 @@ window.confettiBurst = function () {
 function showGameOver(opts) {
   var old = document.getElementById("pmOver");
   if (old) old.remove();
+  var kind = opts.kind === "win" ? "win" : opts.kind === "lose" ? "lose" : "draw";
+  var ICONS = {
+    win: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c4502e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>',
+    lose: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#b3361f" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>',
+    draw: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7a766c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4.5l12 3.5L5 11.5z" fill="#7a766c" stroke="none"/></svg>'
+  };
   var ov = document.createElement("div");
   ov.id = "pmOver";
   ov.className = "pm-overlay";
   var lines = (opts.lines || []).map(function (l) { return "<div class='pm-line'>" + l + "</div>"; }).join("");
   ov.innerHTML = "<div class='pm-modal'>" +
-    "<h2 class='" + (opts.kind === "win" ? "pm-win" : opts.kind === "lose" ? "pm-lose" : "") + "'>" + opts.title + "</h2>" +
-    lines +
+    "<div class='pm-ico " + kind + "'>" + ICONS[kind] + "</div>" +
+    "<h2 class='" + (kind === "win" ? "pm-win" : kind === "lose" ? "pm-lose" : "") + "'>" + opts.title + "</h2>" +
+    (lines ? "<div class='pm-stats'>" + lines + "</div>" : "") +
     "<div class='pm-btns'>" +
+    "<button class='primary pm-big' id='pmRestart'>다시 하기</button>" +
+    "<div class='pm-row'>" +
     (opts.share ? "<button id='pmShare'>결과 복사</button>" : "") +
-    "<button class='primary' id='pmRestart'>다시 하기</button>" +
-    "<button id='pmClose'>닫기</button></div></div>";
+    "<button id='pmClose'>닫기</button></div></div></div>";
   document.body.appendChild(ov);
   document.getElementById("pmRestart").addEventListener("click", function () { ov.remove(); if (opts.onRestart) opts.onRestart(); });
   document.getElementById("pmClose").addEventListener("click", function () { ov.remove(); });
