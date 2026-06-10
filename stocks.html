@@ -53,6 +53,15 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
 #brief .kim .who { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
 #brief .kim .bubble { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; padding: 8px 12px; font-size: 13.5px; }
 #brief button.primary { margin-top: 14px; width: 100%; }
+#brief .tag { display: inline-block; font-size: 12px; font-weight: 700; color: var(--accent); border: 1px solid var(--accent); border-radius: 99px; padding: 1px 10px; margin-bottom: 10px; }
+#brief .tag.rumor { color: #8a6a3a; border-color: #8a6a3a; }
+#brief .evbig { font-size: 16.5px; line-height: 1.6; }
+#brief .mini9 { display: grid; grid-template-columns: repeat(3, 46px); gap: 3px; justify-content: center; margin: 12px 0; }
+#brief .mini9 div { height: 46px; display: flex; align-items: center; justify-content: center; background: var(--surface); border: 1px solid var(--line-strong); font-weight: 700; font-size: 18px; }
+#brief .mini9 div.q { color: var(--accent); background: var(--accent-soft); }
+#brief .choices { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 12px; }
+#brief .choices button { min-width: 46px; }
+#brief .step { font-size: 12px; color: var(--muted); text-align: right; margin-bottom: 4px; }
 </style>
 </head>
 <body>
@@ -443,29 +452,109 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
-  function showBriefing(label, events) {
-    const ov = document.getElementById("overlay");
+  // ----- 순차 브리핑(보고) 시스템 -----
+  let briefQueue = [], briefIdx = 0;
+
+  function shuffleN(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function makeChallenge() {
+    const reward = (30 + Math.floor(Math.random() * 41)) * 10000;
+    if (Math.random() < 0.5) {
+      const nums = shuffleN([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      const qi = Math.floor(Math.random() * 9);
+      return { type: "sudoku", nums: nums, qi: qi, ans: nums[qi], reward: reward };
+    }
+    const SC = [
+      { q: "열린 숫자 1 주변에 닫힌 칸이 딱 하나 남았습니다. 그 칸은?", a: "지뢰" },
+      { q: "숫자 1이 이미 깃발 1개를 찾았습니다. 남은 닫힌 칸들은?", a: "안전" },
+      { q: "숫자 2 주변에 닫힌 칸이 정확히 2개 남았습니다(깃발 없음). 그 칸들은?", a: "지뢰" },
+      { q: "숫자 3 주변에 깃발이 3개 모두 꽂혀 있습니다. 남은 닫힌 칸은?", a: "안전" }
+    ];
+    const sc = SC[Math.floor(Math.random() * SC.length)];
+    return { type: "mine", q: sc.q, ans: sc.a, reward: reward };
+  }
+
+  function buildCards(label, events) {
+    const cards = [];
     let movers = "";
     STOCKS.forEach((s, i) => {
       const chg = (cur(i) / prev(i) - 1) * 100;
       movers += "<div>" + s.name + " <span class='" + (chg >= 0 ? "up" : "down") + "'>" + (chg >= 0 ? "▲" : "▼") + Math.abs(chg).toFixed(1) + "%</span></div>";
     });
-    const evs = events.length
-      ? events.map(e => "<div class='ev " + (e.cls || "") + "'>" + e.t + "</div>").join("")
-      : "<div class='ev'>오늘은 별다른 소식이 없는 조용한 하루입니다.</div>";
     const ret = (totalAssets() / START_CASH - 1) * 100, rr = rivalRet();
-    document.getElementById("brief").innerHTML =
-      "<h2>" + label + " 아침 브리핑</h2>" +
+    cards.push({ html: "<h2>" + label + " 개장 보고</h2>" +
       "<div class='sub2'>" + regime.label + " · 내 수익률 " + (ret >= 0 ? "+" : "") + ret.toFixed(1) + "% · 김부장 " + (rr >= 0 ? "+" : "") + rr.toFixed(1) + "%</div>" +
-      "<div class='movers'>" + movers + "</div>" + evs +
-      "<div class='kim'>" + KIM_SVG + "<div><div class='who'>옆자리 김부장</div><div class='bubble'>" + kimQuip(events) + "</div></div></div>" +
-      "<button class='primary' id='briefClose'>장 시작 ▸</button>";
-    ov.classList.add("show");
-    document.getElementById("briefClose").addEventListener("click", () => ov.classList.remove("show"));
+      "<div class='movers'>" + movers + "</div>" });
+    events.forEach(e => {
+      const tag = e.cls === "rumor" ? "<div class='tag rumor'>소문</div>" : "<div class='tag'>속보</div>";
+      cards.push({ html: tag + "<p class='evbig' style='min-height:52px'>" + e.t + "</p>" });
+    });
+    if (!finished && Math.random() < 0.35) cards.push({ challenge: makeChallenge() });
+    cards.push({ html: "<div class='kim' style='border-top:none;padding-top:0;margin-top:4px'>" + KIM_SVG +
+      "<div><div class='who'>옆자리 김부장 (" + (rr >= 0 ? "+" : "") + rr.toFixed(1) + "%)</div><div class='bubble'>" + kimQuip(events) + "</div></div></div>" });
+    return cards;
   }
-  document.getElementById("overlay").addEventListener("click", (e) => {
-    if (e.target.id === "overlay") e.target.classList.remove("show");
-  });
+
+  function showBriefing(label, events) {
+    briefQueue = buildCards(label, events);
+    briefIdx = 0;
+    renderCard();
+    document.getElementById("overlay").classList.add("show");
+  }
+
+  function nextCard() {
+    briefIdx++;
+    if (briefIdx >= briefQueue.length) {
+      document.getElementById("overlay").classList.remove("show");
+      render();
+    } else {
+      renderCard();
+    }
+  }
+
+  function renderCard() {
+    const card = briefQueue[briefIdx];
+    const brief = document.getElementById("brief");
+    const stepLabel = "<div class='step'>" + (briefIdx + 1) + " / " + briefQueue.length + "</div>";
+    if (card.challenge) { renderChallenge(card.challenge, stepLabel); return; }
+    const last = briefIdx === briefQueue.length - 1;
+    brief.innerHTML = stepLabel + card.html +
+      "<button class='primary' id='briefNext'>" + (last ? "장 시작 ▸" : "다음 보고 ▸") + "</button>";
+    document.getElementById("briefNext").addEventListener("click", nextCard);
+  }
+
+  function renderChallenge(ch, stepLabel) {
+    const brief = document.getElementById("brief");
+    let body;
+    if (ch.type === "sudoku") {
+      body = "<div class='mini9'>" + ch.nums.map((v, i) => i === ch.qi ? "<div class='q'>?</div>" : "<div>" + v + "</div>").join("") + "</div>" +
+        "<div class='choices'>" + [1, 2, 3, 4, 5, 6, 7, 8, 9].map(v => "<button data-a='" + v + "'>" + v + "</button>").join("") + "</div>";
+    } else {
+      body = "<p class='evbig'>" + ch.q + "</p><div class='choices'><button data-a='지뢰'>지뢰다</button><button data-a='안전'>안전하다</button></div>";
+    }
+    brief.innerHTML = stepLabel + "<div class='tag'>퇴근 후 부업</div>" +
+      "<p class='evbig'>" + (ch.type === "sudoku" ? "스도쿠 알바 — 3×3 박스에 1~9가 한 번씩. 빠진 숫자는?" : "지뢰 해체 알바 — 판단이 맞으면 보수를 받습니다.") + "</p>" +
+      body +
+      "<div class='sub2' style='margin-top:10px'>성공 보수 +" + fmt(ch.reward) + "원 · 실패 시 0원</div>";
+    brief.querySelectorAll(".choices button").forEach(b => {
+      b.addEventListener("click", () => {
+        const ok = String(ch.ans) === b.dataset.a;
+        if (ok) cash += ch.reward;
+        brief.innerHTML =
+          "<h2 style='color:" + (ok ? "var(--success)" : "var(--danger)") + ";font-size:20px'>" + (ok ? "부업 성공!" : "부업 실패") + "</h2>" +
+          "<p class='evbig'>" + (ok ? "+" + fmt(ch.reward) + "원이 계좌에 입금됐습니다." : "정답은 '" + ch.ans + "'. 오늘은 공치고 돌아갑니다.") + "</p>" +
+          "<button class='primary' id='briefNext'>다음 ▸</button>";
+        render();
+        document.getElementById("briefNext").addEventListener("click", nextCard);
+      });
+    });
+  }
 
   document.getElementById("nextDay").addEventListener("click", nextDay);
   document.getElementById("skip5").addEventListener("click", () => {
@@ -479,7 +568,11 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
   document.addEventListener("keydown", (e) => {
     if (e.code !== "Space") return;
     const ov = document.getElementById("overlay");
-    if (ov.classList.contains("show")) { e.preventDefault(); ov.classList.remove("show"); return; }
+    if (ov.classList.contains("show")) {
+      e.preventDefault();
+      if (!briefQueue[briefIdx] || !briefQueue[briefIdx].challenge) nextCard();
+      return;
+    }
     if (document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "BUTTON") {
       e.preventDefault(); nextDay();
     }
