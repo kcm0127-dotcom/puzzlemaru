@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace("https://puzzlemaru.xyz"+location.pathname+location.search);</script>
+<meta name="google-site-verification" content="qJrb2RbVZTgje-XaXWygP4cYyEMLFqKScbPZ5_QbVhk" />
+<meta name="naver-site-verification" content="3d9b2d6f2631e9f012be372bff5a87845dd4f225" />
+<meta name="google-site-verification" content="1Y8FATV2pnpzcQtXSazVYOD2g1D-5Fil9KC-PvCvXAo" />
+<meta name="naver-site-verification" content="c453a63eb21eed7ee1bade214294b2e5b7919832" />
+<meta name="google-adsense-account" content="ca-pub-6840959424010586">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840959424010586" crossorigin="anonymous"></script>
+<title>스도쿠 난이도는 어떻게 정해질까 | 퍼즐마루</title>
+<meta name="description" content="스도쿠 난이도는 빈칸 수가 아니라 푸는 데 필요한 기법의 수준으로 결정됩니다. 난이도 측정의 원리와 17개 힌트 정리.">
+<link rel="canonical" href="https://puzzlemaru.xyz/blog-sudoku-difficulty.html">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site">
+  <div class="nav-wrap">
+    <a class="logo" href="index.html">퍼즐<span>마루</span></a>
+    <nav class="main">
+      <a href="sudoku.html">스도쿠</a>
+      <a href="minesweeper.html">지뢰찾기</a>
+      <a href="2048.html">2048</a>
+      <a href="omok.html">오목</a>
+      <a href="guides.html">공략</a>
+      <a href="blog.html" class="active">읽을거리</a>
+    </nav>
+  </div>
+</header>
+<main class="guide">
+  <h1>스도쿠 난이도는 어떻게 정해질까</h1>
+  <p class="sub">빈칸이 많다고 어려운 게 아닙니다</p>
+<h2>흔한 오해: 빈칸 개수</h2>
+<p>힌트가 적을수록 어려울 것 같지만, 꼭 그렇지 않습니다. 힌트가 25개여도 단순 스캐닝만으로 술술 풀리는 판이 있고, 힌트가 30개인데도 고급 기법 없이는 한 칸도 진행되지 않는 판이 있어요. 난이도의 본질은 빈칸의 양이 아니라 <b>추론의 깊이</b>입니다.</p>
+<h2>난이도 = 필요한 기법의 수준</h2>
+<p>퍼즐 생성기는 보통 이렇게 난이도를 측정합니다. 인간이 쓰는 풀이 기법들을 쉬운 순서대로 시뮬레이션하는 거예요. 스캐닝과 네이키드 싱글만으로 끝까지 풀리면 '쉬움', 히든 싱글과 네이키드 페어가 필요하면 '중급', X윙 같은 고급 기법이나 더 깊은 추론이 요구되면 '어려움'으로 분류합니다. 즉 난이도 표시는 "이 판을 푸는 데 필요한 가장 어려운 한 수"의 수준입니다.</p>
+<h2>유일해라는 대전제</h2>
+<p>좋은 스도쿠의 절대 조건은 <b>답이 단 하나</b>여야 한다는 것입니다. 답이 두 개 이상이면 논리가 아니라 찍기가 개입할 수밖에 없거든요. 그래서 생성기는 판을 만들 때마다 풀이기를 돌려 유일해를 검증합니다. 2012년에는 "유일해를 갖는 스도쿠의 최소 힌트는 17개"라는 사실이 컴퓨터 증명으로 확정됐습니다. 16개짜리 정상 스도쿠는 이 세상에 존재하지 않아요.</p>
+<div class="tip">퍼즐마루의 스도쿠도 같은 방식입니다. 백트래킹 생성기가 완성판을 만든 뒤, 칸을 지울 때마다 유일해가 유지되는지 검증하면서 난이도별 판을 깎아냅니다.</div>
+<p>오늘은 한 단계 위 난이도에 도전해 보세요. <a href="sudoku.html"><b>→ 스도쿠 풀러 가기</b></a></p>
+  <div class="ad-slot">AD</div>
+
+  <p style="margin-top:28px"><a href="blog.html">← 읽을거리 목록으로</a></p>
+</main>
+<footer class="site">
+  <div><a href="index.html">홈</a> · <a href="blog.html">읽을거리</a> · <a href="privacy.html">개인정보처리방침</a></div>
+  <div style="margin-top:8px">© 2026 퍼즐마루</div>
+</footer>
+</body>
+</html>
