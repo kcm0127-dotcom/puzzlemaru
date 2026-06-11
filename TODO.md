@@ -12,6 +12,8 @@
 
 ## 완료
 
+- [x] 2026-06-11 2048 대결: 친구 온라인 모드(PeerJS WebRTC, 방 코드/초대 링크, 방장 선공·수+스폰 동기화) + AI 난이도 3단계(박대리 쉬움 / 김부장 중간 / 이회장 최고)
+- [x] 2026-06-11 Search Console: .xyz 속성 sitemap 재제출("가져올 수 없음" 해소 시도), 스도쿠·지뢰찾기·2048 색인 생성 요청 (홈은 색인 완료 확인)
 - [x] 2026-06-11 도메인 puzzlemaru.xyz 구매·연결, 전 페이지 pages.dev→.xyz JS 리다이렉트 + canonical/og/sitemap/robots .xyz 통일 (404.html 스니펫 누락분 보강)
 - [x] 2026-06-11 구글 검색결과 파비콘 대응: favicon-96.png(96px)·favicon.ico(48px) 생성, 전 HTML에 PNG 아이콘 링크 추가 (구글 크롤러가 SVG 파비콘 인식 불안정)
 
