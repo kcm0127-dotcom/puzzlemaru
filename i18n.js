@@ -59,6 +59,13 @@
     "단어 16개를 4그룹으로 묶기": "Group 16 words into 4 sets",
     "실루엣만 보고 나라 맞히기": "Guess the country by its silhouette",
     "김부장을 소개합니다": "Meet Mr. Kim",
+    "퍼즐마루 터줏대감 · 김부장": "Puzzlemaru's own Mr. Kim",
+    "오늘도 한 판 풀고 가게.": "Solve one before you go.",
+    "아침부터 퍼즐이라니, 자네 인재야.": "Puzzles in the morning? You're a keeper.",
+    "점심엔 역시 퍼즐 한 판이지.": "Lunch break means puzzle break.",
+    "오후엔 머리가 굳지. 한 판 풀고 가게.": "Afternoons dull the mind. Solve one, sharpen up.",
+    "퇴근했으면 한 판은 풀어야지.": "Off work? Then it's puzzle time.",
+    "이 시간까지 퍼즐이라니, 적당히 하게나.": "Puzzles at this hour? Don't overdo it.",
     /* 김부장 한마디 */
     "스도쿠는 연필부터 잡는 게 아니야. 눈으로 스캔부터 하는 거라네.": "Sudoku isn't about the pencil. Scan with your eyes first.",
     "점수제라니 젊은 친구들 취향이군. 콤보 끊기면 책임지게.": "Scoring system, eh? Don't you dare break that combo.",

@@ -25,7 +25,7 @@
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 <style>
 #board { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
 #solved { display: flex; flex-direction: column; gap: 8px; }
@@ -93,7 +93,7 @@
 
   <div class="kim-note">
     <div id="kimFace"></div>
-    <p id="kimSay"><b>Mr. Kim</b> · I solved today's puzzle over lunch. Your turn, my friend.</p>
+    <p id="kimSay"><b>Mr. Kim</b>I solved today's puzzle over lunch. Your turn, my friend.</p>
   </div>
 
   <details class="how">
@@ -109,7 +109,7 @@
   <div style="margin-top:8px">© 2026 퍼즐마루</div>
 </footer>
 <script src="confetti.js"></script>
-<script src="kim.js?v=2"></script>
+<script src="kim.js?v=3"></script>
 <script src="yeongyeol-en-data.js?v=1"></script>
 <script>
 (function () {
@@ -232,7 +232,7 @@
     if (win) {
       const beat = kimMiss >= 5 || state.mistakes < kimMiss;
       kimEl.innerHTML = kimSVG(beat ? "sad" : "happy", 64);
-      sayEl.innerHTML = "<b>Mr. Kim</b> · " + kimLine() + (beat ? " Well played!" : "");
+      sayEl.innerHTML = "<b>Mr. Kim</b>" + kimLine() + (beat ? " Well played!" : "");
       confettiBurst();
       setTimeout(() => showGameOver({
         kind: "win", title: "Links complete!",
@@ -242,7 +242,7 @@
       }), 700);
     } else {
       kimEl.innerHTML = kimSVG("happy", 64);
-      sayEl.innerHTML = "<b>Mr. Kim</b> · Better luck tomorrow. " + kimLine();
+      sayEl.innerHTML = "<b>Mr. Kim</b>Better luck tomorrow. " + kimLine();
       state.solved = [0, 1, 2, 3].filter(gi => state.solved.includes(gi))
         .concat([0, 1, 2, 3].filter(gi => !state.solved.includes(gi)));
       renderSolved(); renderTiles();
@@ -295,7 +295,7 @@
     msgEl.textContent = state.win ? "Solved! A new puzzle arrives at midnight (KST)." : "That's it for today — come back tomorrow.";
     msgEl.className = "msg " + (state.win ? "win" : "lose");
     if (!state.win) { state.solved = [0,1,2,3]; renderSolved(); renderTiles(); }
-    document.getElementById("kimSay").innerHTML = "<b>Mr. Kim</b> · " + kimLine();
+    document.getElementById("kimSay").innerHTML = "<b>Mr. Kim</b>" + kimLine();
     document.getElementById("kimFace").innerHTML = kimSVG(state.win ? "sad" : "happy", 64);
   }
 })();
