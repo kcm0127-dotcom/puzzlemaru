@@ -186,9 +186,18 @@ table.rule th { background: var(--surface); }
 /* ───── 게임 종료 모달 ───── */
 .pm-overlay { position: fixed; inset: 0; background: rgba(35,34,32,.5); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; animation: pmFade .15s ease; }
 @keyframes pmFade { from { opacity: 0; } }
-.pm-modal { background: var(--bg); border: 2px solid var(--text); border-radius: 18px; max-width: 360px; width: 100%; padding: 28px 24px 20px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,.3); animation: pmPop .22s cubic-bezier(.34,1.56,.64,1); }
+.pm-modal { position: relative; background: var(--bg); border: 2px solid var(--text); border-radius: 18px; max-width: 360px; width: 100%; padding: 28px 24px 20px; text-align: center; box-shadow: 8px 8px 0 rgba(35,34,32,.18), 0 24px 60px rgba(0,0,0,.25); animation: pmPop .22s cubic-bezier(.34,1.56,.64,1); }
 @keyframes pmPop { from { transform: scale(.85); opacity: 0; } }
-.pm-ico { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; background: var(--accent-soft); }
+.pm-ico { width: 68px; height: 68px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: flex-end; justify-content: center; background: var(--accent-soft); overflow: hidden; }
+.pm-stamp {
+  position: absolute; top: 14px; right: 14px; width: 60px; height: 60px;
+  border: 2px solid #c0392b; border-radius: 50%; box-shadow: inset 0 0 0 3px var(--bg), inset 0 0 0 4.5px #c0392b;
+  color: #c0392b; display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 16px; letter-spacing: .12em; text-indent: .12em;
+  transform: rotate(-14deg); opacity: .88; pointer-events: none;
+  animation: pmStamp .3s cubic-bezier(.34,1.56,.64,1) .25s backwards;
+}
+@keyframes pmStamp { from { transform: rotate(-14deg) scale(2.2); opacity: 0; } }
 .pm-ico.lose { background: #f3ece9; }
 .pm-ico.draw { background: #f3f1ea; }
 .pm-modal h2 { font-size: 23px; letter-spacing: -0.01em; margin-bottom: 4px; }

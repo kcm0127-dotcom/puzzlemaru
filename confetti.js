@@ -4,7 +4,7 @@ window.confettiBurst = function () {
   cv.width = innerWidth; cv.height = innerHeight;
   document.body.appendChild(cv);
   const ctx = cv.getContext("2d");
-  const colors = ["#2563eb", "#7c3aed", "#f59e0b", "#16a34a", "#ef4444", "#ec4899"];
+  const colors = ["#c4502e", "#e0a430", "#3d7a45", "#2c5e9e", "#f0b9a6", "#232220"];
   const parts = Array.from({ length: 140 }, () => ({
     x: innerWidth / 2 + (Math.random() - 0.5) * 200,
     y: innerHeight * 0.35,
@@ -45,8 +45,14 @@ function showGameOver(opts) {
   ov.id = "pmOver";
   ov.className = "pm-overlay";
   var lines = (opts.lines || []).map(function (l) { return "<div class='pm-line'>" + l + "</div>"; }).join("");
-  ov.innerHTML = "<div class='pm-modal'>" +
-    "<div class='pm-ico " + kind + "'>" + ICONS[kind] + "</div>" +
+  /* 김부장 얼굴 + 결재 도장 (kim.js 로드 시) */
+  var ico = window.kimSVG
+    ? window.kimSVG(kind === "win" ? "happy" : kind === "lose" ? "sad" : "think", 58)
+    : ICONS[kind];
+  var stamp = kind === "win" ? "<div class='pm-stamp'>승인</div>"
+            : kind === "lose" ? "<div class='pm-stamp'>반려</div>" : "";
+  ov.innerHTML = "<div class='pm-modal'>" + stamp +
+    "<div class='pm-ico " + kind + "'>" + ico + "</div>" +
     "<h2 class='" + (kind === "win" ? "pm-win" : kind === "lose" ? "pm-lose" : "") + "'>" + opts.title + "</h2>" +
     (lines ? "<div class='pm-stats'>" + lines + "</div>" : "") +
     "<div class='pm-btns'>" +

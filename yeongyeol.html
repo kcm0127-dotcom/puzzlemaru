@@ -25,7 +25,7 @@
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 <style>
 #board { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
 #solved { display: flex; flex-direction: column; gap: 8px; }
@@ -35,13 +35,14 @@
 .yg-bar span { font-size: 13px; }
 #tiles16 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .yg-tile {
-  aspect-ratio: 1.55; border: 1px solid var(--line-strong); border-radius: 9px;
+  aspect-ratio: 1.55; border: 1.5px solid #cfc9b8; border-radius: 10px; box-shadow: 2px 2px 0 rgba(35,34,32,.07);
   background: var(--surface); font-weight: 700; font-size: 15px; letter-spacing: -0.02em;
   display: flex; align-items: center; justify-content: center; cursor: pointer;
   padding: 2px; word-break: keep-all; line-height: 1.2; text-align: center;
   transition: background .1s, transform .1s;
 }
 .yg-tile.sel { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.yg-tile:hover { border-color: var(--ink); }
 .yg-tile.shake { animation: ygShake .35s; }
 @keyframes ygShake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 .yg-tile.long { font-size: 12.5px; }
@@ -108,7 +109,7 @@
   <div><a href="index.html">홈</a> · <a href="about.html">소개·문의</a> · <a href="privacy.html">개인정보처리방침</a></div>
   <div style="margin-top:8px">© 2026 퍼즐마루</div>
 </footer>
-<script src="confetti.js"></script>
+<script src="confetti.js?v=2"></script>
 <script src="kim.js?v=3"></script>
 <script src="yeongyeol-data.js?v=1"></script>
 <script>

@@ -99,6 +99,7 @@
     /* 지뢰찾기 */
     "PC는 우클릭, 모바일은 길게 눌러 깃발을 꽂으세요": "Right-click (or long-press on mobile) to flag",
     "펑. 지뢰를 밟았습니다 — 새 게임으로 다시 도전하세요.": "Boom. You hit a mine — try again.",
+    "승인": "PASS", "반려": "FAIL",
     "승리!": "Victory!", "펑!": "Boom!", "패배": "Defeat", "무승부": "Draw", "게임 오버": "Game Over",
     "첫 클릭은 항상 안전해요. 가운데부터 여는 게 유리합니다.": "The first click is always safe. Starting near the center helps.",
     "오늘의 보드 — 모든 방문자에게 같은 판이 출제됩니다.": "Daily board — everyone gets the same layout today.",

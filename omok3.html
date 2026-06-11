@@ -25,12 +25,12 @@
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 <style>
 #boardWrap { display: flex; justify-content: center; }
 #omok {
-  background: #ddba83; border-radius: 8px; touch-action: manipulation;
-  box-shadow: 0 2px 8px rgba(0,0,0,.15); max-width: 100%; height: auto;
+  background: #ddba83; border: 2.5px solid var(--ink); border-radius: 10px; touch-action: manipulation;
+  box-shadow: 6px 6px 0 rgba(35,34,32,.12); max-width: 100%; height: auto;
 }
 .legend { display: flex; gap: 16px; justify-content: center; font-size: 13.5px; color: var(--muted); margin-top: 10px; flex-wrap: wrap; }
 .legend i { display: inline-block; width: 13px; height: 13px; border-radius: 50%; vertical-align: -2px; margin-right: 5px; }
@@ -87,7 +87,7 @@
   <div><a href="index.html">홈</a> · <a href="omok.html">오목</a> · <a href="about.html">소개·문의</a> · <a href="privacy.html">개인정보처리방침</a></div>
   <div style="margin-top:8px">© 2026 퍼즐마루</div>
 </footer>
-<script src="confetti.js"></script>
+<script src="confetti.js?v=2"></script>
 <script>
 (function () {
   const N = 15, CV = document.getElementById("omok"), ctx = CV.getContext("2d");
