@@ -81,6 +81,12 @@
     "주식은 말이야, 무릎에 사서 어깨에 파는 거라네.": "Stocks? Buy at the knee, sell at the shoulder.",
     "오늘도 점심시간에 한 판 했다네. 자네도 어디 한번 풀어보게.": "I solved today's over lunch. Your turn, my friend.",
     "세계지도 좀 본 사람은 모양만 봐도 안다네. 험험.": "A man who's read maps knows a country by its shape. Ahem.",
+    /* 2048 직급 · 결재 서류 */
+    "인턴": "Intern", "사원": "Staff", "주임": "Junior", "대리": "AM",
+    "과장": "Mgr", "차장": "DGM", "부장": "GM", "이사": "Dir.",
+    "상무": "MD", "전무": "EVP", "사장": "CEO", "회장": "Chair.",
+    "담당": "Owner", "검토": "Review", "결재": "Approve",
+    "스도쿠 업무일지": "Sudoku Work Log", "스코어 어택 보고서": "Score Attack Report",
     /* 공통 버튼 · 툴바 */
     "새 게임": "New Game", "무르기": "Undo", "힌트": "Hint", "팁": "Tip",
     "메모": "Notes", "지우기": "Erase", "다시 하기": "Play Again", "닫기": "Close",

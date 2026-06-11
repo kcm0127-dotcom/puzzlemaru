@@ -25,7 +25,7 @@
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 <style>
 #boardWrap { display: flex; justify-content: center; }
 #omok {
@@ -134,7 +134,7 @@
       ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 5; ctx.shadowOffsetY = 2;
       ctx.beginPath();
       ctx.arc(x, y, GAP * 0.42, 0, Math.PI * 2);
-      ctx.fillStyle = g; ctx.fill();
+      ctx.fillStyle = g; ctx.fill(); ctx.shadowColor = "transparent"; ctx.lineWidth = 1.6; ctx.strokeStyle = "rgba(35,34,32,.7)"; ctx.stroke();
       ctx.restore();
     }
     const last = history[history.length - 1];
@@ -308,7 +308,7 @@
   reset();
 })();
 </script>
-<script src="kim.js?v=3"></script>
-<script src="i18n.js?v=2"></script>
+<script src="kim.js?v=4"></script>
+<script src="i18n.js?v=3"></script>
 </body>
 </html>

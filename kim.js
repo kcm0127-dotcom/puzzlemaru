@@ -100,6 +100,10 @@
       el.innerHTML = window.kimSVG(el.getAttribute("data-kim"), Number(el.getAttribute("data-kim-size")) || 64);
       bindTap(el);
     });
+    /* data-kim-face="크기" 요소에 얼굴만 렌더 */
+    document.querySelectorAll("[data-kim-face]").forEach(function (el) {
+      el.innerHTML = window.kimFaceSVG(Number(el.getAttribute("data-kim-face")) || 24);
+    });
     /* 로고에 김부장 얼굴 자동 삽입 */
     document.querySelectorAll(".logo").forEach(function (logo) {
       if (logo.querySelector(".logo-kim")) return;

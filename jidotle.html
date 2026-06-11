@@ -25,10 +25,11 @@
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 <style>
 #jdWrap { max-width: 480px; margin: 0 auto; }
-#shape { background: var(--surface); border: 2px solid var(--ink); border-radius: 14px; padding: 8px; box-shadow: 6px 6px 0 rgba(35,34,32,.08); }
+#shape { position: relative; background: var(--surface); border: 2px solid var(--ink); border-radius: 14px; padding: 8px; box-shadow: 6px 6px 0 rgba(35,34,32,.08); }
+#shape::after { content: "대외비"; position: absolute; top: 10px; right: 12px; color: #c0392b; border: 2px solid #c0392b; border-radius: 6px; padding: 0 8px; font-weight: 800; font-size: 13px; letter-spacing: .3em; text-indent: .3em; transform: rotate(8deg); opacity: .45; pointer-events: none; }
 #shape svg { display: block; width: 100%; height: auto; }
 #shape path { fill: var(--ink); }
 #guesses { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
@@ -115,7 +116,7 @@
   <div style="margin-top:8px">© 2026 퍼즐마루</div>
 </footer>
 <script src="confetti.js?v=2"></script>
-<script src="kim.js?v=3"></script>
+<script src="kim.js?v=4"></script>
 <script src="jidotle-data.js?v=1"></script>
 <script>
 (function () {
@@ -341,6 +342,6 @@
   }
 })();
 </script>
-<script src="i18n.js?v=2"></script>
+<script src="i18n.js?v=3"></script>
 </body>
 </html>

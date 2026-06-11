@@ -25,7 +25,7 @@
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 <style>
 #wrap { overflow-x: auto; padding-bottom: 8px; }
 #grid {
@@ -107,8 +107,8 @@
 <script src="confetti.js?v=2"></script>
 <script>
 (function () {
-  const MINE_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" aria-label="지뢰"><circle cx="12" cy="12" r="5.5" fill="#2b2b2b"/><path d="M12 3.5v4M12 16.5v4M3.5 12h4M16.5 12h4M6.4 6.4l2.4 2.4M15.2 15.2l2.4 2.4M17.6 6.4l-2.4 2.4M8.8 15.2l-2.4 2.4" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round"/><circle cx="10.2" cy="10.2" r="1.4" fill="#8a8a8a"/></svg>';
-  const FLAG_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" aria-label="깃발"><path d="M7.5 21V4" stroke="#5b6472" stroke-width="2" stroke-linecap="round"/><path d="M7.5 4.5l9 3.2-9 3.2z" fill="#c4502e"/></svg>';
+  const MINE_SVG = '<svg viewBox="0 0 24 24" width="17" height="17" aria-label="야근 폭탄"><circle cx="11" cy="14.5" r="6.8" fill="#232220"/><path d="M14.8 9.2l2.6-3.2" stroke="#232220" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M18.6 4.6l1-1.8M20.4 6.8l2-.4M20.6 3l.2-1.8" stroke="#c4502e" stroke-width="1.8" stroke-linecap="round"/><circle cx="8.6" cy="12.4" r="1.7" fill="#faf8f3" opacity=".85"/></svg>';
+  const FLAG_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" aria-label="깃발"><g transform="rotate(-5 12 12)"><path d="M5 4.5h14v11.5l-4.5 4.5H5z" fill="#e25b3a" stroke="#8f3517" stroke-width="1.4" stroke-linejoin="round"/><path d="M19 16l-4.5 4.5V16z" fill="#8f3517"/><path d="M8.5 9h7M8.5 12.5h5" stroke="#fdf6ec" stroke-width="1.6" stroke-linecap="round"/></g></svg>';
   const LEVELS = { b: [9, 9, 10], i: [16, 16, 40], e: [16, 30, 99] };
   let R, C, M, mines, openArr, flagArr, started, finished, timerInt, seconds, opened;
   let dailyMode = false, minesPlaced = false, rng = Math.random;
@@ -324,7 +324,7 @@
   init();
 })();
 </script>
-<script src="kim.js?v=3"></script>
-<script src="i18n.js?v=2"></script>
+<script src="kim.js?v=4"></script>
+<script src="i18n.js?v=3"></script>
 </body>
 </html>
