@@ -24,8 +24,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUITE/fonts/static/woff2/SUITE.css">
+<link rel="stylesheet" href="style.css?v=9">
 <style>
 #boardWrap { display: flex; justify-content: center; }
 #omok {
@@ -63,6 +63,14 @@
   </div>
   <p class="hint">당신(흑) vs 김부장(백) vs 박대리(적) — 누구든 먼저 다섯 알을 이으면 승리</p>
 
+  <div class="doc-head" aria-hidden="true">
+    <div class="doc-title">삼파전 대국 기록부</div>
+    <div class="doc-sign">
+      <div><span>담당</span><b>나</b></div>
+      <div><span>검토</span><b>박대리</b></div>
+      <div><span>결재</span><b data-kim-face="22"></b></div>
+    </div>
+  </div>
   <div id="boardWrap"><canvas id="omok" width="600" height="600" aria-label="3인 오목판"></canvas></div>
   <div class="legend">
     <span><i style="background:#1d1c1a"></i>나</span>
@@ -130,6 +138,12 @@
       ctx.beginPath();
       ctx.arc(PAD + c * GAP, PAD + r * GAP, 4, 0, Math.PI * 2);
       ctx.fillStyle = "#8a6a3a"; ctx.fill();
+    });
+    [[118, 478, 27], [468, 132, 21], [510, 520, 15]].forEach(([x, y, r]) => {
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(110,72,28,.16)"; ctx.lineWidth = 4.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(x, y, r - 4, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(110,72,28,.08)"; ctx.lineWidth = 2; ctx.stroke();
     });
     for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
       if (!board[r][c]) continue;
@@ -285,6 +299,6 @@
 })();
 </script>
 <script src="kim.js?v=4"></script>
-<script src="i18n.js?v=3"></script>
+<script src="i18n.js?v=4"></script>
 </body>
 </html>

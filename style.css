@@ -22,10 +22,11 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 body {
-  font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  font-family: "SUITE", "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
   background:
-    radial-gradient(1200px 500px at 80% -10%, #f4eee1 0%, rgba(244,238,225,0) 60%),
-    var(--bg);
+    repeating-linear-gradient(92deg, rgba(96,64,24,.045) 0 2px, rgba(96,64,24,0) 2px 110px),
+    repeating-linear-gradient(88deg, rgba(255,240,210,.05) 0 3px, rgba(255,240,210,0) 3px 70px),
+    linear-gradient(180deg, #c9a877 0%, #b89460 60%, #ad8a58 100%);
   color: var(--text);
   line-height: 1.7;
   font-size: 16px;
@@ -47,7 +48,14 @@ nav.main a { padding: 6px 11px; font-size: 14px; color: var(--muted); border-rad
 nav.main a:hover { color: var(--ink); background: rgba(0,0,0,.045); }
 nav.main a.active { color: var(--accent); font-weight: 700; background: var(--accent-soft); }
 
-main { max-width: 920px; margin: 0 auto; padding: 44px 20px 72px; }
+/* 책상 위 종이 시트 */
+main {
+  max-width: 920px; margin: 26px auto 36px; padding: 40px 32px 64px;
+  background: var(--bg);
+  border: 1.5px solid rgba(35,34,32,.45);
+  border-radius: 14px;
+  box-shadow: 0 3px 0 rgba(35,34,32,.22), 0 20px 48px rgba(58,38,10,.32);
+}
 .kicker { font-size: 13px; font-weight: 700; letter-spacing: .14em; color: var(--accent); margin-bottom: 10px; }
 h1 { font-size: 42px; line-height: 1.22; letter-spacing: -0.03em; font-weight: 800; }
 .lede { color: var(--muted); font-size: 17px; margin: 14px 0 0; max-width: 30em; }
@@ -127,10 +135,10 @@ details.how summary::-webkit-details-marker { display: none; }
 details.how p { font-size: 14.5px; color: #4d4a43; }
 details.how h2 { font-size: 15px; margin: 18px 0 4px; }
 
-footer.site { border-top: 1px solid var(--line); margin-top: 48px; padding: 26px 20px; font-size: 13px; color: var(--muted); }
+footer.site { padding: 0 20px 30px; font-size: 13px; color: #5c4628; }
 footer.site > div { max-width: 920px; margin: 0 auto; }
-footer.site a { color: var(--muted); margin-right: 14px; }
-footer.site a:hover { color: var(--ink); }
+footer.site a { color: #5c4628; margin-right: 14px; text-decoration: underline; text-decoration-color: rgba(92,70,40,.35); }
+footer.site a:hover { color: #2e2210; }
 
 /* ───── 공략·글 ───── */
 .guide { max-width: 660px; }
@@ -167,11 +175,14 @@ table.rule th { background: var(--surface); }
 .sgrid .tgt { background: #d9e7d4; color: var(--success); }
 .sgrid .xw { background: #d9e4f3; color: #2c5e9e; }
 
+@media (max-width: 960px) {
+  main { margin-left: 12px; margin-right: 12px; }
+}
 @media (max-width: 640px) {
   h1 { font-size: 31px; }
   .game-head h1 { font-size: 21px; }
   .game-head .toolbar { margin-left: 0; }
-  main { padding: 28px 16px 56px; }
+  main { margin: 14px 8px 24px; padding: 26px 14px 48px; }
   .hero { gap: 10px; }
   .kim-hero { margin: 0 auto; }
 }

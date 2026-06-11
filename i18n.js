@@ -87,6 +87,11 @@
     "상무": "MD", "전무": "EVP", "사장": "CEO", "회장": "Chair.",
     "담당": "Owner", "검토": "Review", "결재": "Approve",
     "스도쿠 업무일지": "Sudoku Work Log", "스코어 어택 보고서": "Score Attack Report",
+    "현장 안전 점검표": "Site Safety Checklist", "인사 발령 대장": "Promotion Ledger",
+    "탕비실 대국 기록부": "Break Room Match Log", "온라인 대국 기록부": "Online Match Log",
+    "삼파전 대국 기록부": "Three-Way Match Log", "거꾸로 대국 기록부": "Reverse Match Log",
+    "맞대결 대국 기록부": "Local Match Log", "업무 분류 보고서": "Word Sorting Report",
+    "해외 출장 보고서": "Business Trip Report", "자산 운용 보고서": "Asset Report",
     /* 공통 버튼 · 툴바 */
     "새 게임": "New Game", "무르기": "Undo", "힌트": "Hint", "팁": "Tip",
     "메모": "Notes", "지우기": "Erase", "다시 하기": "Play Again", "닫기": "Close",
