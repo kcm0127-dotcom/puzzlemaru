@@ -10,13 +10,13 @@
 <meta name="naver-site-verification" content="c453a63eb21eed7ee1bade214294b2e5b7919832" />
 <meta name="google-adsense-account" content="ca-pub-6840959424010586">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840959424010586" crossorigin="anonymous"></script>
-<title>2048 대결 — AI와 번갈아 두는 2048 | 퍼즐마루</title>
-<meta name="description" content="퍼즐마루 오리지널 2048 대결. 한 보드에서 AI와 한 수씩 번갈아 두고, 합친 점수로 승부합니다. 박대리·김부장·이회장 3단계 난이도.">
-<link rel="canonical" href="https://puzzlemaru.xyz/2048-vs.html">
+<title>2048 온라인 대결 — 친구와 번갈아 두는 2048 | 퍼즐마루</title>
+<meta name="description" content="퍼즐마루 2048 온라인 대결. 방을 만들어 초대 코드를 보내고, 친구와 한 보드에서 한 수씩 번갈아 두며 점수로 승부합니다. 설치·가입 없이 바로 플레이.">
+<link rel="canonical" href="https://puzzlemaru.xyz/2048-online.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="2048 대결 — AI와 번갈아 두는 2048 | 퍼즐마루">
-<meta property="og:description" content="퍼즐마루 오리지널 2048 대결. 한 보드에서 AI와 한 수씩 번갈아 두고, 합친 점수로 승부합니다. 박대리·김부장·이회장 3단계 난이도.">
-<meta property="og:url" content="https://puzzlemaru.xyz/2048-vs.html">
+<meta property="og:title" content="2048 온라인 대결 — 친구와 번갈아 두는 2048 | 퍼즐마루">
+<meta property="og:description" content="방을 만들어 초대 코드를 보내고, 친구와 한 보드에서 한 수씩 번갈아 두며 점수로 승부합니다. 설치·가입 없이 바로 플레이.">
+<meta property="og:url" content="https://puzzlemaru.xyz/2048-online.html">
 <meta property="og:image" content="https://puzzlemaru.xyz/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -68,26 +68,31 @@
 </header>
 <main class="game">
   <div class="game-head">
-    <h1>2048 대결 <span style="font-size:13px;color:var(--accent);font-weight:700;vertical-align:middle">퍼즐마루 오리지널</span></h1>
+    <h1>2048 온라인 대결 <span style="font-size:13px;color:var(--accent);font-weight:700;vertical-align:middle">퍼즐마루 오리지널</span></h1>
     <div class="toolbar">
     <button class="primary" id="reset">새 게임</button>
     <button id="hintBtn">팁</button>
-    <select id="level" style="padding:6px 8px;border:1.5px solid var(--ink);border-radius:8px;font:inherit;background:#faf9f5">
-      <option value="easy">박대리 (쉬움)</option>
-      <option value="mid" selected>김부장 (중간)</option>
-      <option value="hard">이회장 (최고)</option>
-    </select>
     <span class="stat">나 <b id="score">0</b></span>
-    <span class="stat"><span id="oppLabel">김부장</span> <b id="ai">0</b></span>
+    <span class="stat">친구 <b id="ai">0</b></span>
   </div>
   </div>
-  <p class="hint">한 수씩 번갈아 둡니다 — 합친 점수는 그 수를 둔 사람의 것. 보드가 멈추면 점수가 높은 쪽 승리. 친구와 붙고 싶다면 <a href="2048-online.html" style="text-decoration:underline">온라인 대결</a></p>
+  <p class="hint">친구와 한 보드에서 한 수씩 번갈아 둡니다 — 합친 점수는 그 수를 둔 사람의 것. 보드가 멈추면 점수가 높은 쪽 승리</p>
+
+  <div id="onlineBar" style="max-width:420px;margin:0 auto 14px;text-align:center;font-size:14px">
+    <div id="onlineSetup" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button class="primary" id="makeRoom">방 만들기</button>
+      <input id="joinCode" maxlength="6" placeholder="초대 코드" autocapitalize="characters" style="width:100px;padding:6px 10px;border:1.5px solid var(--ink);border-radius:8px;font:inherit;text-transform:uppercase">
+      <button id="joinBtn">입장</button>
+    </div>
+    <div id="roomInfo" style="display:none;margin-top:8px">방 코드 <b id="roomCode" style="letter-spacing:2px"></b> <button id="copyLink" style="margin-left:6px">초대 링크 복사</button></div>
+    <p id="onlineStatus" style="margin:6px 0 0;color:#807e78;font-size:13px"></p>
+  </div>
 
   <div class="doc-head" aria-hidden="true">
     <div class="doc-title">인사 발령 대장</div>
     <div class="doc-sign">
       <div><span>담당</span><b>나</b></div>
-      <div><span>검토</span><b>박대리</b></div>
+      <div><span>검토</span><b>친구</b></div>
       <div><span>결재</span><b data-kim-face="22"></b></div>
     </div>
   </div>
@@ -98,16 +103,18 @@
   <p class="msg" id="msg"></p>
 
     <div class="kim-note">
-    <div data-kim="happy"></div>
-    <p><b>김부장</b>나와 한 판 붙자는 건가? 좋지, 져도 울지 말게.</p>
+    <div data-kim="think"></div>
+    <p><b>김부장</b>친구끼리 붙는다고? 좋네, 나는 결재나 하면서 구경하지.</p>
   </div>
 
   <details class="how">
   <summary>게임 방법 · 팁</summary>
+  <h2>온라인 대결 방법</h2>
+  <p>한 명이 <b>방 만들기</b>를 눌러 초대 링크(또는 6자리 코드)를 친구에게 보내고, 친구가 링크로 들어오거나 코드를 입력해 입장하면 바로 시작됩니다. 방장이 선공이며, 한 수씩 번갈아 둡니다.</p>
   <h2>2048 잘하는 법</h2>
   <p>가장 큰 타일을 한쪽 구석(예: 왼쪽 아래)에 고정하고, 그 구석을 비우는 방향으로는 절대 밀지 않는 것이 기본 전략입니다. 큰 타일 옆에 다음 크기 타일을 계단처럼 쌓아 두면 연쇄 합치기가 쉬워져요.</p>
 <p><a href="guide-2048.html" style="text-decoration:underline">→ 2048 공략 전체 보기</a></p>
-<p>일반 모드: <a href="2048.html" style="text-decoration:underline">클래식 2048</a></p>
+<p>혼자 연습: <a href="2048.html" style="text-decoration:underline">클래식 2048</a> · AI와 대결: <a href="2048-vs.html" style="text-decoration:underline">김부장과 대결</a></p>
   </details>
 </main>
 <footer class="site">
@@ -129,9 +136,7 @@
   };
   let grid, score, aiScore, over, won, idSeq, myTurn;
   let tiles; // id -> {v, r, c, el}
-  const LEVELS = { easy: "박대리", mid: "김부장", hard: "이회장" };
-  let level = "mid";
-  function oppName() { return LEVELS[level]; }
+  let isHost = false, peer = null, conn = null, started = false;
 
   const cellsEl = document.getElementById("cells");
   for (let i = 0; i < 16; i++) cellsEl.appendChild(document.createElement("div"));
@@ -184,16 +189,9 @@
   function clearBoard() {
     document.getElementById("tiles").innerHTML = "";
     grid = Array.from({ length: 4 }, () => [null, null, null, null]);
-    tiles = new Map(); idSeq = 1; score = 0; aiScore = 0; over = false; won = false;
+    tiles = new Map(); idSeq = 1; score = 0; aiScore = 0; over = true; won = false; myTurn = false;
     updateScore();
     document.getElementById("msg").className = "msg";
-  }
-
-  function reset() {
-    clearBoard();
-    myTurn = true;
-    document.getElementById("msg").textContent = "당신 차례입니다.";
-    spawn(); spawn();
   }
 
   function updateScore() {
@@ -201,7 +199,7 @@
     document.getElementById("ai").textContent = aiScore;
   }
 
-  function move(dr, dc) {
+  function move(dr, dc, remote) {
     if (over) return;
     let moved = false;
     const range = [0, 1, 2, 3];
@@ -252,18 +250,13 @@
     if (moved) {
       updateScore();
       setTimeout(() => {
-        spawn();
+        if (remote) { if (remote.spawn) spawn(remote.spawn); }
+        else sendMsg({ t: "move", d: [dr, dc], spawn: spawn() });
         if (!canMove()) { endGame(); return; }
         const m = document.getElementById("msg");
         m.className = "msg";
-        if (myTurn) {
-          myTurn = false;
-          m.textContent = oppName() + " 생각 중...";
-          setTimeout(aiTurn, 420);
-        } else {
-          myTurn = true;
-          m.textContent = "당신 차례입니다.";
-        }
+        myTurn = !!remote;
+        m.textContent = myTurn ? "당신 차례입니다." : "상대 차례입니다...";
       }, 130);
     }
   }
@@ -353,74 +346,123 @@
   }
   document.getElementById("hintBtn").addEventListener("click", hint);
 
-  function aiTurn() {
-    if (over) return;
-    const vals = Array.from({length: 4}, (_, r) => Array.from({length: 4}, (_, c) => grid[r][c] ? grid[r][c].v : 0));
-    const dirs = [[1, 0], [0, -1], [0, 1], [-1, 0]];
-    const options = [];
-    for (const dd of dirs) {
-      const r1 = simMove(vals, dd[0], dd[1]);
-      if (r1.moved) options.push({ dd, r1 });
-    }
-    if (!options.length) { endGame(); return; }
-    let bestD = null;
-    if (level === "easy") {
-      // 박대리: 절반은 아무렇게나, 나머지는 당장 점수만 본다
-      if (Math.random() < 0.5) bestD = options[Math.floor(Math.random() * options.length)].dd;
-      else {
-        let bs = -1;
-        for (const o of options) if (o.r1.gain > bs) { bs = o.r1.gain; bestD = o.dd; }
-      }
-    } else {
-      const hard = level === "hard";
-      let bestS = -Infinity;
-      for (const o of options) {
-        let empt = 0;
-        o.r1.g.forEach(row => row.forEach(v => { if (!v) empt++; }));
-        let oppBest = 0;
-        for (const ee of dirs) {
-          const r2 = simMove(o.r1.g, ee[0], ee[1]);
-          if (r2.moved && r2.gain > oppBest) oppBest = r2.gain;
-        }
-        let sc = o.r1.gain * 2 + empt * (hard ? 80 : 60) - oppBest * (hard ? 1.7 : 1.2);
-        if (hard) {
-          // 이회장: 큰 타일을 구석에 몰아넣는 판 운영까지 본다
-          const flat = o.r1.g.flat();
-          if (o.r1.g[3][3] === Math.max(...flat)) sc += 500;
-          if (o.dd[0] === -1) sc -= 300;
-        }
-        if (sc > bestS) { bestS = sc; bestD = o.dd; }
-      }
-    }
-    move(bestD[0], bestD[1]);
-  }
-
   function endGame() {
     over = true;
-    const opp = oppName();
     const win = score > aiScore, drawG = score === aiScore;
     const m = document.getElementById("msg");
-    m.textContent = "게임 종료 — 나 " + score + " : " + opp + " " + aiScore;
+    m.textContent = "게임 종료 — 나 " + score + " : 친구 " + aiScore;
     m.className = "msg " + (win ? "win" : "lose");
     if (win) confettiBurst();
     setTimeout(() => showGameOver({
       kind: drawG ? undefined : win ? "win" : "lose",
-      title: drawG ? "무승부" : win ? "승리!" : opp + " 승리",
-      lines: ["나 " + score.toLocaleString() + "점 : " + opp + " " + aiScore.toLocaleString() + "점"],
-      share: win ? "퍼즐마루 2048 대결 — " + opp + " 난이도를 " + score + ":" + aiScore + "로 이겼다\nhttps://puzzlemaru.xyz/2048-vs.html" : null,
-      onRestart: reset
+      title: drawG ? "무승부" : win ? "승리!" : "친구 승리",
+      lines: ["나 " + score.toLocaleString() + "점 : 친구 " + aiScore.toLocaleString() + "점"],
+      share: win ? "퍼즐마루 2048 온라인 대결 — 친구를 " + score + ":" + aiScore + "로 이겼다\nhttps://puzzlemaru.xyz/2048-online.html" : null,
+      onRestart: newGame
     }), 600);
   }
 
-  document.getElementById("level").addEventListener("change", (e) => {
-    level = e.target.value;
-    document.getElementById("oppLabel").textContent = LEVELS[level];
-    reset();
-  });
+  function newGame() {
+    if (!conn || !conn.open) { setStatus("아직 상대와 연결되지 않았습니다. 방을 만들거나 코드로 입장하세요."); return; }
+    if (isHost) startGame();
+    else { sendMsg({ t: "resetReq" }); setStatus("방장에게 새 게임을 요청했습니다."); }
+  }
+
+  // ---- 연결 (PeerJS WebRTC, 서버 불필요) ----
+  const PFX = "puzzlemaru-2048-";
+  const statusEl = document.getElementById("onlineStatus");
+  function setStatus(t) { statusEl.textContent = t; }
+  function loadPeer(cb) {
+    if (window.Peer) return cb();
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";
+    s.onload = cb;
+    s.onerror = () => setStatus("연결 모듈을 불러오지 못했습니다. 새로고침 후 다시 시도하세요.");
+    document.head.appendChild(s);
+  }
+  function makeCode() {
+    const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+    let s = "";
+    for (let i = 0; i < 6; i++) s += A[Math.floor(Math.random() * A.length)];
+    return s;
+  }
+  function enterSetup() {
+    document.getElementById("onlineSetup").style.display = "none";
+  }
+  function bindConn() {
+    conn.on("data", onMsg);
+    conn.on("close", () => { over = true; setStatus("상대와의 연결이 끊어졌습니다. 새로고침하면 처음부터 시작할 수 있어요."); });
+  }
+  function sendMsg(o) { if (conn && conn.open) conn.send(o); }
+  function onMsg(d) {
+    if (!d || typeof d !== "object") return;
+    if (d.t === "start") {
+      clearBoard();
+      (d.spawns || []).forEach(sp => { if (sp) spawn(sp); });
+      over = false; started = true; myTurn = false;
+      document.getElementById("msg").textContent = "상대(방장) 차례로 시작합니다.";
+      setStatus("연결됨 — 대결 중");
+    } else if (d.t === "move") {
+      if (!myTurn && !over) move(d.d[0], d.d[1], { spawn: d.spawn });
+    } else if (d.t === "resetReq" && isHost) startGame();
+  }
+  function startGame() {
+    clearBoard();
+    const s1 = spawn(), s2 = spawn();
+    over = false; started = true; myTurn = true;
+    sendMsg({ t: "start", spawns: [s1, s2] });
+    document.getElementById("msg").textContent = "당신 차례입니다. (선공)";
+    setStatus("연결됨 — 대결 중");
+  }
+  function hostRoom() {
+    enterSetup(); isHost = true;
+    setStatus("방을 만드는 중...");
+    loadPeer(() => {
+      const code = makeCode();
+      peer = new Peer(PFX + code);
+      peer.on("open", () => {
+        document.getElementById("roomInfo").style.display = "";
+        document.getElementById("roomCode").textContent = code;
+        const link = location.origin + location.pathname + "?room=" + code;
+        document.getElementById("copyLink").onclick = () => {
+          navigator.clipboard.writeText(link).then(
+            () => setStatus("초대 링크를 복사했습니다. 친구에게 보내세요."),
+            () => setStatus("복사 실패 — 코드를 직접 알려주세요: " + code)
+          );
+        };
+        setStatus("친구가 입장하면 자동으로 시작됩니다.");
+      });
+      peer.on("connection", c => {
+        conn = c; bindConn();
+        c.on("open", startGame);
+      });
+      peer.on("error", e => setStatus("연결 오류(" + e.type + ") — 새로고침 후 다시 시도하세요."));
+    });
+  }
+  function joinRoom(code) {
+    code = (code || "").trim().toUpperCase();
+    if (!/^[A-Z0-9]{6}$/.test(code)) { setStatus("초대 코드 6자리를 입력하세요."); return; }
+    enterSetup(); isHost = false;
+    setStatus("방에 연결하는 중...");
+    loadPeer(() => {
+      peer = new Peer();
+      peer.on("open", () => {
+        conn = peer.connect(PFX + code, { reliable: true });
+        bindConn();
+        conn.on("open", () => setStatus("연결됨 — 방장이 시작합니다."));
+      });
+      peer.on("error", e => setStatus(e.type === "peer-unavailable" ? "방을 찾을 수 없습니다. 코드를 확인하세요." : "연결 오류(" + e.type + ") — 새로고침 후 다시 시도하세요."));
+    });
+  }
+  document.getElementById("makeRoom").addEventListener("click", hostRoom);
+  document.getElementById("joinBtn").addEventListener("click", () => joinRoom(document.getElementById("joinCode").value));
 
   window.addEventListener("resize", () => { tiles.forEach(styleTile); });
-  document.getElementById("reset").addEventListener("click", reset);
-  reset();
+  document.getElementById("reset").addEventListener("click", newGame);
+  clearBoard();
+  document.getElementById("msg").textContent = "방을 만들거나, 친구에게 받은 초대 코드로 입장하세요.";
+  const rm = location.search.match(/[?&]room=([A-Za-z0-9]{6})/);
+  if (rm) { document.getElementById("joinCode").value = rm[1].toUpperCase(); joinRoom(rm[1]); }
 })();
 </script>
 <script src="kim.js?v=4"></script>
