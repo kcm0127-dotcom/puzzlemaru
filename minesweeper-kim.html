@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace("https://puzzlemaru.xyz"+location.pathname+location.search);</script>
+<meta name="google-site-verification" content="qJrb2RbVZTgje-XaXWygP4cYyEMLFqKScbPZ5_QbVhk" />
+<meta name="naver-site-verification" content="3d9b2d6f2631e9f012be372bff5a87845dd4f225" />
+<meta name="google-site-verification" content="1Y8FATV2pnpzcQtXSazVYOD2g1D-5Fil9KC-PvCvXAo" />
+<meta name="naver-site-verification" content="c453a63eb21eed7ee1bade214294b2e5b7919832" />
+<meta name="google-adsense-account" content="ca-pub-6840959424010586">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840959424010586" crossorigin="anonymous"></script>
+<title>김부장의 지뢰밭 — 방해 공작 지뢰찾기 | 퍼즐마루</title>
+<meta name="description" content="퍼즐마루 오리지널 지뢰찾기. 넥타이·커피잔·사무실 모양의 비정형 보드에서, 서류를 던지고 커피를 쏟는 김부장의 방해를 뚫고 지뢰를 해체하세요.">
+<link rel="canonical" href="https://puzzlemaru.xyz/minesweeper-kim.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="김부장의 지뢰밭 — 방해 공작 지뢰찾기 | 퍼즐마루">
+<meta property="og:description" content="넥타이·커피잔·사무실 모양의 비정형 보드에서, 서류를 던지고 커피를 쏟는 김부장의 방해를 뚫고 지뢰를 해체하세요.">
+<meta property="og:url" content="https://puzzlemaru.xyz/minesweeper-kim.html">
+<meta property="og:image" content="https://puzzlemaru.xyz/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="퍼즐마루">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="96x96" href="favicon-96.png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUITE/fonts/static/woff2/SUITE.css">
+<link rel="stylesheet" href="style.css?v=9">
+<style>
+.doc-title::before { content: ""; width: 16px; align-self: stretch; margin: -6px 10px -6px -12px; border-radius: 8px 0 0 8px; background: repeating-linear-gradient(45deg, #e0a430 0 7px, #232220 7px 14px); border-right: 1.5px solid var(--ink); }
+#wrap { overflow-x: auto; padding-bottom: 8px; position: relative; }
+#grid {
+  display: grid; gap: 0; margin: 0 auto; width: max-content;
+  user-select: none; touch-action: manipulation;
+  filter: drop-shadow(6px 6px 0 rgba(35,34,32,.1));
+}
+.sq {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; cursor: pointer; position: relative;
+  background: #e3ddcf;
+  border: 3px solid; border-color: #f7f3e8 #c2b89e #c2b89e #f7f3e8;
+}
+.sq svg { display: block; }
+.sq.bad { color: #b3361f; font-size: 14px; }
+@media (max-width: 600px) { .sq { width: 28px; height: 28px; } }
+.sq.open { background: var(--surface); border: 1px solid #e3e0d5; cursor: default; }
+.sq.boom { background: #f3c2b5; }
+.sq.void { background: transparent; border-color: transparent; cursor: default; pointer-events: none; }
+.sq.coach { box-shadow: inset 0 0 0 3px var(--accent); }
+.sq.paper::after {
+  content: ""; position: absolute; inset: 0; z-index: 2; border-radius: 2px;
+  background: repeating-linear-gradient(0deg, #f6f2e4 0 4px, #e7e1cb 4px 5px);
+  border: 1.5px solid #b9b094; transform: rotate(-3deg); box-shadow: 1px 2px 3px rgba(35,34,32,.2);
+}
+.sq.coffee::after {
+  content: ""; position: absolute; inset: -1px; z-index: 2; border-radius: 50%;
+  background: radial-gradient(circle, rgba(82,46,21,.92) 0 58%, rgba(82,46,21,.6) 75%, rgba(82,46,21,.25));
+}
+#lockOverlay {
+  position: absolute; inset: 0; z-index: 5; display: none;
+  align-items: center; justify-content: center;
+}
+#lockOverlay.on { display: flex; }
+#lockOverlay .card {
+  background: var(--surface, #faf9f5); border: 2.5px solid var(--ink); border-radius: 12px;
+  padding: 14px 20px; box-shadow: 5px 5px 0 rgba(35,34,32,.18);
+  display: flex; align-items: center; gap: 12px; max-width: 320px;
+}
+#lockOverlay .card p { margin: 0; font-size: 14px; font-weight: 700; }
+#lockOverlay .card small { display: block; font-weight: 600; color: #807e78; margin-top: 3px; }
+.c1{color:#3a6b9e}.c2{color:#3d7a45}.c3{color:#c4502e}.c4{color:#6b4f93}
+.c5{color:#8a5a2c}.c6{color:#2e7d80}.c7{color:#232220}.c8{color:#7a766c}
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="nav-wrap">
+    <a class="logo" href="index.html">퍼즐<span>마루</span></a>
+    <nav class="main">
+      <a href="sudoku.html">스도쿠</a>
+      <a href="minesweeper.html" class="active">지뢰찾기</a>
+      <a href="2048.html">2048</a>
+      <a href="omok.html">오목</a>
+      <a href="yeongyeol.html">연결고리</a>
+      <a href="jidotle.html">지도틀</a>
+      <a href="stocks.html">모의주식</a>
+      <a href="guides.html">공략</a>
+      <a href="blog.html">읽을거리</a>
+    </nav>
+  </div>
+</header>
+<main class="game">
+  <div class="game-head">
+    <h1>김부장의 지뢰밭 <span style="font-size:13px;color:var(--accent);font-weight:700;vertical-align:middle">퍼즐마루 오리지널</span></h1>
+    <div class="toolbar">
+    <select id="map">
+      <option value="tie" selected>넥타이</option>
+      <option value="cup">커피잔</option>
+      <option value="office">사무실</option>
+    </select>
+    <button class="primary" id="reset">새 게임</button>
+    <button id="hintBtn">힌트</button>
+    <span class="stat">깃발 <b id="flags">0</b></span>
+    <span class="stat">시간 <b id="timer">0</b>초</span>
+  </div>
+  </div>
+  <p class="hint">김부장이 사무실 곳곳에 야근 폭탄을 심어뒀습니다 — 게다가 플레이 중에도 서류를 던지고 커피를 쏟으며 방해합니다. PC는 우클릭, 모바일은 길게 눌러 깃발</p>
+
+  <div class="doc-head" aria-hidden="true">
+    <div class="doc-title">특별 안전 점검 지시서</div>
+    <div class="doc-sign">
+      <div><span>담당</span><b>나</b></div>
+      <div><span>검토</span><b>박대리</b></div>
+      <div><span>결재</span><b data-kim-face="22"></b></div>
+    </div>
+  </div>
+  <div id="wrap">
+    <div id="grid" aria-label="김부장의 지뢰밭 보드"></div>
+    <div id="lockOverlay"><div class="card"><div id="lockFace"></div><p id="lockText">김부장: 이거 급한 건데, 잠깐만 보고 가지.<small id="lockCount"></small></p></div></div>
+  </div>
+  <p class="msg" id="msg"></p>
+
+    <div class="kim-note">
+    <div data-kim="proud"></div>
+    <p><b>김부장</b>내 구역에선 내 규칙대로 하는 거야. 서류 날아간다, 조심하게.</p>
+  </div>
+
+  <details class="how">
+  <summary>게임 방법 · 팁</summary>
+  <h2>김부장의 지뢰밭 규칙</h2>
+  <p>기본 규칙은 지뢰찾기와 같습니다 — 모든 안전한 칸을 열면 승리, 첫 클릭은 안전. 다만 보드가 넥타이·커피잔·사무실 모양의 비정형이라 가장자리 추론이 색다르고, 게임 중 김부장이 무작위로 방해 공작을 겁니다.</p>
+  <p>방해 공작 세 가지: <b>서류 더미</b>(열린 숫자 몇 개를 잠시 가림 — 기억해 두세요), <b>커피 쏟기</b>(한 구역이 잠시 커피에 잠김), <b>긴급 업무</b>(몇 초간 보드를 만질 수 없음). 모두 잠시 후 원래대로 돌아오니 침착하게.</p>
+<p><a href="guide-minesweeper.html" style="text-decoration:underline">→ 지뢰찾기 공략 전체 보기</a></p>
+<p>다른 모드: <a href="minesweeper.html" style="text-decoration:underline">클래식</a> · <a href="minesweeper-items.html" style="text-decoration:underline">아이템전</a></p>
+  </details>
+</main>
+<footer class="site">
+  <div><a href="index.html">홈</a> · <a href="guide-minesweeper.html">지뢰찾기 공략</a> · <a href="about.html">소개·문의</a> · <a href="privacy.html">개인정보처리방침</a></div>
+  <div style="margin-top:8px">© 2026 퍼즐마루</div>
+</footer>
+<script src="confetti.js?v=2"></script>
+<script>
+(function () {
+  const MINE_SVG = '<svg viewBox="0 0 24 24" width="17" height="17" aria-label="야근 폭탄"><circle cx="11" cy="14.5" r="6.8" fill="#232220"/><path d="M14.8 9.2l2.6-3.2" stroke="#232220" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M18.6 4.6l1-1.8M20.4 6.8l2-.4M20.6 3l.2-1.8" stroke="#c4502e" stroke-width="1.8" stroke-linecap="round"/><circle cx="8.6" cy="12.4" r="1.7" fill="#faf8f3" opacity=".85"/></svg>';
+  const FLAG_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" aria-label="깃발"><g transform="rotate(-5 12 12)"><path d="M5 4.5h14v11.5l-4.5 4.5H5z" fill="#e25b3a" stroke="#8f3517" stroke-width="1.4" stroke-linejoin="round"/><path d="M19 16l-4.5 4.5V16z" fill="#8f3517"/><path d="M8.5 9h7M8.5 12.5h5" stroke="#fdf6ec" stroke-width="1.6" stroke-linecap="round"/></g></svg>';
+
+  // 비정형 맵 — 1: 플레이 가능, 0: 빈 공간
+  const MAPS = {
+    tie: { name: "넥타이", rows: [
+      "00111111100",
+      "00111111100",
+      "00011111000",
+      "00001110000",
+      "00011111000",
+      "00011111000",
+      "00111111100",
+      "00111111100",
+      "01111111110",
+      "01111111110",
+      "01111111110",
+      "01111111110",
+      "00111111100",
+      "00011111000",
+      "00001110000",
+      "00000100000"
+    ]},
+    cup: { name: "커피잔", rows: [
+      "00111111110000",
+      "01111111111000",
+      "01111111111110",
+      "01111111110011",
+      "01111111110011",
+      "01111111111110",
+      "01111111111000",
+      "00111111110000",
+      "00011111100000",
+      "00001111000000",
+      "00111111110000"
+    ]},
+    office: { name: "사무실", rows: [
+      "1111111111111111",
+      "1111111111111111",
+      "1100111111001111",
+      "1100111111001111",
+      "1111111111111111",
+      "1111001111110011",
+      "1111001111110011",
+      "1111111111111111",
+      "1111111111111111",
+      "1100111111001111",
+      "1100111111001111",
+      "1111111111111111"
+    ]}
+  };
+
+  let R, C, M, mask, mines, openArr, flagArr, started, finished, timerInt, seconds, opened, playable;
+  let nextEventAt = 0, lockUntil = 0, restoreFns = [];
+
+  function init() {
+    const map = MAPS[document.getElementById("map").value];
+    R = map.rows.length; C = map.rows[0].length;
+    mask = [];
+    for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) mask.push(map.rows[r][c] === "1");
+    playable = mask.filter(Boolean).length;
+    M = Math.max(10, Math.round(playable * 0.15));
+    mines = new Array(R * C).fill(false);
+    openArr = new Array(R * C).fill(false);
+    flagArr = new Array(R * C).fill(false);
+    started = false; finished = false; opened = 0; seconds = 0;
+    nextEventAt = 0; lockUntil = 0;
+    restoreFns.forEach(f => f()); restoreFns = [];
+    document.getElementById("lockOverlay").classList.remove("on");
+    clearInterval(timerInt);
+    document.getElementById("timer").textContent = "0";
+    document.getElementById("flags").textContent = M;
+    document.getElementById("msg").textContent = "";
+    document.getElementById("msg").className = "msg";
+    const grid = document.getElementById("grid");
+    grid.style.gridTemplateColumns = `repeat(${C}, auto)`;
+    grid.innerHTML = "";
+    for (let i = 0; i < R * C; i++) {
+      const d = document.createElement("div");
+      d.className = mask[i] ? "sq" : "sq void";
+      d.dataset.i = i;
+      grid.appendChild(d);
+    }
+  }
+
+  function neighbors(i) {
+    const r = Math.floor(i / C), c = i % C, out = [];
+    for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+      if (!dr && !dc) continue;
+      const nr = r + dr, nc = c + dc;
+      if (nr >= 0 && nr < R && nc >= 0 && nc < C && mask[nr * C + nc]) out.push(nr * C + nc);
+    }
+    return out;
+  }
+
+  function placeMines(safe) {
+    const banned = new Set([safe, ...neighbors(safe)]);
+    const candidates = [];
+    for (let i = 0; i < R * C; i++) if (mask[i] && !banned.has(i)) candidates.push(i);
+    let placed = 0;
+    while (placed < M) {
+      const i = candidates[Math.floor(Math.random() * candidates.length)];
+      if (!mines[i]) { mines[i] = true; placed++; }
+    }
+  }
+
+  function count(i) { return neighbors(i).filter(n => mines[n]).length; }
+
+  function reveal(i) {
+    if (!mask[i] || openArr[i] || flagArr[i]) return;
+    openArr[i] = true; opened++;
+    const el = sq(i);
+    el.classList.add("open");
+    if (mines[i]) { el.innerHTML = MINE_SVG; el.classList.add("boom"); lose(); return; }
+    const n = count(i);
+    if (n > 0) { el.textContent = n; el.classList.add("c" + n); }
+    else neighbors(i).forEach(reveal);
+  }
+
+  function sq(i) { return document.querySelector(`[data-i="${i}"]`); }
+  function mapName() { return MAPS[document.getElementById("map").value].name; }
+
+  function endCleanup() {
+    finished = true; clearInterval(timerInt);
+    restoreFns.forEach(f => f()); restoreFns = [];
+    document.getElementById("lockOverlay").classList.remove("on");
+  }
+
+  function lose() {
+    endCleanup();
+    for (let i = 0; i < R * C; i++) {
+      if (!mask[i]) continue;
+      if (mines[i] && !flagArr[i]) { const el = sq(i); el.classList.add("open"); el.innerHTML = MINE_SVG; }
+      if (!mines[i] && flagArr[i]) { const el = sq(i); el.textContent = "✕"; el.classList.add("bad"); }
+    }
+    const m = document.getElementById("msg");
+    m.textContent = "펑. 김부장이 흐뭇하게 웃고 있습니다 — 새 게임으로 설욕하세요.";
+    m.className = "msg lose";
+    setTimeout(() => showGameOver({
+      kind: "lose", title: "펑!",
+      lines: ["김부장의 야근 폭탄 작렬 · " + seconds + "초", "방해가 와도 숫자는 그대로예요 — 기억해 두면 이깁니다"],
+      onRestart: init
+    }), 600);
+  }
+
+  function checkWin() {
+    if (opened === playable - M && !finished) {
+      endCleanup();
+      const m = document.getElementById("msg");
+      m.textContent = "승리! 김부장의 방해를 뚫었습니다 — 기록: " + seconds + "초";
+      m.className = "msg win";
+      confettiBurst();
+      setTimeout(() => showGameOver({
+        kind: "win", title: "승리!",
+        lines: ["기록 " + seconds + "초 · " + mapName() + " 지뢰밭", "김부장의 방해 공작을 모두 버텨냈습니다"],
+        share: "퍼즐마루 김부장의 지뢰밭(" + mapName() + ") " + seconds + "초 클리어 — 방해 공작을 뚫었다\nhttps://puzzlemaru.xyz/minesweeper-kim.html",
+        onRestart: init
+      }), 700);
+    }
+  }
+
+  // ---- 김부장의 방해 공작 ----
+  function kimSay(text) {
+    const m = document.getElementById("msg");
+    m.className = "msg";
+    m.innerHTML = "김부장의 방해 — " + text;
+  }
+  function evPapers() {
+    const numbered = [];
+    for (let i = 0; i < R * C; i++) {
+      if (mask[i] && openArr[i] && !mines[i] && count(i) > 0 && !sq(i).classList.contains("paper")) numbered.push(i);
+    }
+    if (numbered.length < 3) return false;
+    const picks = [];
+    while (picks.length < Math.min(4, numbered.length)) {
+      const x = numbered[Math.floor(Math.random() * numbered.length)];
+      if (!picks.includes(x)) picks.push(x);
+    }
+    picks.forEach(i => sq(i).classList.add("paper"));
+    const undo = () => picks.forEach(i => { const el = sq(i); if (el) el.classList.remove("paper"); });
+    restoreFns.push(undo);
+    setTimeout(() => { undo(); restoreFns = restoreFns.filter(f => f !== undo); }, 7000);
+    kimSay("\"이 서류들 좀 검토해주게.\" 숫자 " + picks.length + "개가 서류에 깔렸습니다 (7초)");
+    return true;
+  }
+  function evCoffee() {
+    const open = [];
+    for (let i = 0; i < R * C; i++) if (mask[i] && openArr[i]) open.push(i);
+    if (!open.length) return false;
+    const center = open[Math.floor(Math.random() * open.length)];
+    const zone = [center, ...neighbors(center)].filter(i => openArr[i]);
+    zone.forEach(i => sq(i).classList.add("coffee"));
+    const undo = () => zone.forEach(i => { const el = sq(i); if (el) el.classList.remove("coffee"); });
+    restoreFns.push(undo);
+    setTimeout(() => { undo(); restoreFns = restoreFns.filter(f => f !== undo); }, 7000);
+    kimSay("\"앗, 손이 미끄러졌네.\" 커피가 쏟아져 한 구역이 잠겼습니다 (7초)");
+    return true;
+  }
+  function evUrgent() {
+    lockUntil = seconds + 5;
+    const ov = document.getElementById("lockOverlay");
+    if (typeof kimSVG === "function") document.getElementById("lockFace").innerHTML = kimSVG("proud", 56);
+    ov.classList.add("on");
+    kimSay("\"이거 급한 건데.\" 5초간 긴급 업무 — 보드를 만질 수 없습니다");
+    return true;
+  }
+  function fireEvent() {
+    const evs = [evPapers, evCoffee, evUrgent];
+    for (const ev of evs.sort(() => Math.random() - 0.5)) { if (ev()) return; }
+  }
+
+  function tick() {
+    seconds++;
+    document.getElementById("timer").textContent = seconds;
+    if (lockUntil && seconds < lockUntil) {
+      document.getElementById("lockCount").textContent = (lockUntil - seconds) + "초 남음";
+    } else if (lockUntil && seconds >= lockUntil) {
+      lockUntil = 0;
+      document.getElementById("lockOverlay").classList.remove("on");
+    }
+    if (seconds >= nextEventAt && !finished) {
+      fireEvent();
+      nextEventAt = seconds + 14 + Math.floor(Math.random() * 10);
+    }
+  }
+
+  function clickCell(i) {
+    if (finished || !mask[i] || lockUntil) return;
+    clearCoach();
+    if (!started) {
+      started = true;
+      placeMines(i);
+      nextEventAt = 12 + Math.floor(Math.random() * 6);
+      timerInt = setInterval(tick, 1000);
+    }
+    if (openArr[i]) {
+      const n = count(i);
+      const ns = neighbors(i);
+      const fl = ns.filter(x => flagArr[x]).length;
+      if (n > 0 && fl === n) ns.forEach(x => { if (!flagArr[x] && !openArr[x]) reveal(x); });
+    } else {
+      reveal(i);
+    }
+    if (!finished) checkWin();
+  }
+
+  function toggleFlag(i) {
+    if (finished || !mask[i] || openArr[i] || lockUntil) return;
+    clearCoach();
+    flagArr[i] = !flagArr[i];
+    sq(i).innerHTML = flagArr[i] ? FLAG_SVG : "";
+    const used = flagArr.filter(Boolean).length;
+    document.getElementById("flags").textContent = M - used;
+  }
+
+  const grid = document.getElementById("grid");
+  grid.addEventListener("click", (e) => {
+    const t = e.target.closest(".sq");
+    if (t) clickCell(Number(t.dataset.i));
+  });
+  grid.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    const t = e.target.closest(".sq");
+    if (t) toggleFlag(Number(t.dataset.i));
+  });
+  let pressTimer = null, longPressed = false;
+  grid.addEventListener("touchstart", (e) => {
+    const t = e.target.closest(".sq");
+    if (!t) return;
+    longPressed = false;
+    pressTimer = setTimeout(() => {
+      longPressed = true;
+      toggleFlag(Number(t.dataset.i));
+      if (navigator.vibrate) navigator.vibrate(40);
+    }, 380);
+  }, { passive: true });
+  grid.addEventListener("touchend", (e) => {
+    clearTimeout(pressTimer);
+    if (longPressed) e.preventDefault();
+  });
+  grid.addEventListener("touchmove", () => clearTimeout(pressTimer), { passive: true });
+
+  function clearCoach() {
+    document.querySelectorAll(".sq.coach").forEach(el => el.classList.remove("coach"));
+  }
+
+  function hint() {
+    if (finished) return;
+    const m = document.getElementById("msg");
+    m.className = "msg";
+    if (!started) { m.textContent = "첫 클릭은 항상 안전해요. 넓은 쪽부터 여는 게 유리합니다."; return; }
+    clearCoach();
+    for (let i = 0; i < R * C; i++) {
+      if (!mask[i] || !openArr[i] || mines[i]) continue;
+      const n = count(i);
+      if (n === 0) continue;
+      const ns = neighbors(i);
+      const fl = ns.filter(x => flagArr[x]).length;
+      const closed = ns.filter(x => !openArr[x] && !flagArr[x]);
+      if (!closed.length) continue;
+      if (fl === n) {
+        sq(i).classList.add("coach");
+        closed.forEach(x => sq(x).classList.add("coach"));
+        m.innerHTML = '힌트 · 이 <b>' + n + '</b>은 깃발 ' + n + '개를 이미 찾았어요 → 나머지 닫힌 칸은 <b>전부 안전</b>합니다.';
+        return;
+      }
+      if (closed.length === n - fl) {
+        sq(i).classList.add("coach");
+        closed.forEach(x => sq(x).classList.add("coach"));
+        m.innerHTML = '힌트 · 이 <b>' + n + '</b> 주변의 남은 닫힌 칸 수 = 남은 지뢰 수예요 → 표시된 칸은 <b>전부 지뢰</b>입니다.';
+        return;
+      }
+    }
+    m.innerHTML = '단순 규칙으로 확정되는 칸이 지금은 없어요. 비정형 가장자리의 좁은 목을 노려보세요.';
+  }
+  document.getElementById("hintBtn").addEventListener("click", hint);
+
+  document.getElementById("reset").addEventListener("click", init);
+  document.getElementById("map").addEventListener("change", init);
+  init();
+})();
+</script>
+<script src="kim.js?v=4"></script>
+<script src="i18n.js?v=4"></script>
+</body>
+</html>
