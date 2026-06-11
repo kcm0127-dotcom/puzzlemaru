@@ -132,7 +132,7 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
   <details class="how">
   <summary>게임 방법 · 팁</summary>
   <h2>모의주식 게임 방법</h2>
-  <p>가상 기업 6곳의 주식을 사고팔며 60일 동안 자산을 불리는 게임입니다. 맞은편 자리의 <b>김부장(AI)</b>도 같은 1,000만 원으로 투자 중이니, 60일 뒤 그를 이기는 것이 목표예요. 매도 시 수수료·세금 0.25%가 빠집니다.</p>
+  <p>가상 기업 6곳의 주식을 사고팔며 60일 동안 자산을 불리는 게임입니다. 맞은편의 <b>김부장(AI)</b>과 옆자리 <b>박대리(AI)</b>도 같은 1,000만 원으로 투자 중이에요. 김부장은 오르는 종목을 쫓고, 박대리는 떨어진 종목에 몰빵하고 버팁니다. 60일 뒤 <b>사내 수익률 1위</b>가 목표. 매도 시 수수료·세금 0.25%가 빠집니다.</p>
   <p>시장 전체에는 <b>강세장·약세장·횡보장</b> 분위기가 번갈아 찾아오고, 가끔 <b>소문(D-2)</b>이 돕니다. 소문은 이틀 뒤 사실로 밝혀져 주가가 뛰기도, 과장으로 끝나 떨어지기도 해요. 소문에 올라탈지 무시할지는 당신의 선택. 일부 종목은 정기적으로 <b>배당</b>을 줍니다 — 들고만 있어도 현금이 들어와요.</p>
   <p>배울 수 있는 것: 분산투자(한 종목 몰빵의 위험), 소문 매매의 양면성, 배당의 힘, 그리고 단기 시세는 김부장도 못 맞힌다는 것.</p>
   </details>
@@ -170,7 +170,8 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
   ];
   let day, cash, hold, prices, sel = 0, finished;
   let regime, regimeLeft, rumor;            // rumor: {i, resolveDay}
-  let rCash, rHold;                          // 김부장
+  let rCash, rHold;                          // 김부장 (추세 추종)
+  let pCash, pHold;                          // 박대리 (역추세 몰빵·존버)
   let dayEvents = [], suppressBrief = false;
 
   function randn() {
@@ -191,6 +192,8 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
     hold = STOCKS.map(() => ({ qty: 0, avg: 0 }));
     rCash = START_CASH;
     rHold = STOCKS.map(() => ({ qty: 0, avg: 0 }));
+    pCash = START_CASH;
+    pHold = STOCKS.map(() => ({ qty: 0, avg: 0 }));
     prices = STOCKS.map(s => {
       const h = [s.p0];
       for (let i = 0; i < 19; i++) {
@@ -209,6 +212,7 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
   function assetsOf(c, h) { return c + h.reduce((a, x, i) => a + x.qty * cur(i), 0); }
   function totalAssets() { return assetsOf(cash, hold); }
   function rivalRet() { return (assetsOf(rCash, rHold) / START_CASH - 1) * 100; }
+  function parkRet() { return (assetsOf(pCash, pHold) / START_CASH - 1) * 100; }
 
   function setMsg(t, cls) {
     const m = document.getElementById("msg");
@@ -267,6 +271,34 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
     }
   }
 
+  function parkTrade() {
+    // 박대리: 가장 많이 떨어진 종목에 몰빵, 손절 없음, +35% 익절
+    for (let i = 0; i < STOCKS.length; i++) {
+      const h = pHold[i];
+      if (h.qty && cur(i) > h.avg * 1.35) {
+        pCash += h.qty * cur(i) * (1 - FEE);
+        if (Math.random() < 0.35) pushNews("박대리가 " + STOCKS[i].name + " 익절에 성공했습니다. \"존버는 승리한다니까요.\"");
+        h.qty = 0; h.avg = 0;
+        return;
+      }
+    }
+    if (Math.random() < 0.4) return;
+    let worst = 0, worstChg = Infinity;
+    for (let i = 0; i < STOCKS.length; i++) {
+      const h = prices[i], n = h.length;
+      const chg = h[n - 1] / h[n - 4];
+      if (chg < worstChg) { worstChg = chg; worst = i; }
+    }
+    const qty = Math.floor((pCash * 0.6) / cur(worst));
+    if (qty > 0) {
+      const c = qty * cur(worst);
+      const h = pHold[worst];
+      h.avg = (h.avg * h.qty + c) / (h.qty + qty);
+      h.qty += qty; pCash -= c;
+      if (Math.random() < 0.3) pushNews("박대리가 급락한 " + STOCKS[worst].name + "를 쓸어 담습니다. \"저점이에요, 저점.\"");
+    }
+  }
+
   function nextDay() {
     if (finished) return;
     day++;
@@ -321,34 +353,38 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
           setMsg("배당 입금: " + s.name + " " + fmt(hold[i].qty * per) + "원", "win");
         }
         if (rHold[i].qty) rCash += rHold[i].qty * per;
+        if (pHold[i].qty) pCash += pHold[i].qty * per;
       }
     });
     rivalTrade();
+    parkTrade();
     if (!suppressBrief && day < DAYS) showBriefing("DAY " + day, dayEvents);
     // 종료
     if (day >= DAYS) {
       finished = true;
       const ret = (totalAssets() / START_CASH - 1) * 100;
-      const rr = rivalRet();
+      const rr = rivalRet(), pr = parkRet();
       const best = Number(localStorage.getItem("bestStockRet") || -Infinity);
       if (ret > best) localStorage.setItem("bestStockRet", ret.toFixed(1));
       const title = ret <= -20 ? "깡통 계좌" : ret < 0 ? "물린 개미" : ret < 5 ? "은행 이자급"
                   : ret < 15 ? "성실한 개미" : ret < 30 ? "슈퍼개미" : "투자의 달인";
-      const vs = ret > rr ? "김부장(" + (rr >= 0 ? "+" : "") + rr.toFixed(1) + "%)을 이겼습니다!"
-                          : "김부장(" + (rr >= 0 ? "+" : "") + rr.toFixed(1) + "%)에게 졌습니다...";
-      setMsg("60일 종료 · 수익률 " + (ret >= 0 ? "+" : "") + ret.toFixed(1) + "% · 칭호: " + title + " · " + vs, ret > rr ? "win" : "lose");
-      if (ret > rr && ret > 0) confettiBurst();
-      const share = "퍼즐마루 모의주식 60일 수익률 " + (ret >= 0 ? "+" : "") + ret.toFixed(1) + "% · 칭호: " + title +
-        (ret > rr ? " · 김부장을 이겼다" : "") + "\nhttps://puzzlemaru.xyz/stocks.html";
+      const pct = v => (v >= 0 ? "+" : "") + v.toFixed(1) + "%";
+      const rank = 1 + (rr > ret ? 1 : 0) + (pr > ret ? 1 : 0);
+      const rankTxt = rank === 1 ? "사내 수익률 1위!" : rank === 2 ? "사내 2위" : "사내 꼴찌...";
+      const vs = "김부장 " + pct(rr) + " · 박대리 " + pct(pr);
+      setMsg("60일 종료 · 내 수익률 " + pct(ret) + " · " + rankTxt + " (" + vs + ")", rank === 1 ? "win" : "lose");
+      if (rank === 1 && ret > 0) confettiBurst();
+      const share = "퍼즐마루 모의주식 60일 — 내 수익률 " + pct(ret) + " (" + rankTxt + ") · " + vs +
+        "\nhttps://puzzlemaru.xyz/stocks.html";
       const sb = document.getElementById("shareBtn");
       sb.style.display = "";
       sb.onclick = () => {
         navigator.clipboard.writeText(share).then(() => { sb.textContent = "복사 완료!"; setTimeout(() => sb.textContent = "결과 복사하기", 1500); });
       };
       setTimeout(() => showGameOver({
-        kind: ret > rr ? "win" : "lose",
-        title: "칭호: " + title,
-        lines: ["60일 최종 수익률 " + (ret >= 0 ? "+" : "") + ret.toFixed(1) + "%", vs,
+        kind: rank === 1 ? "win" : "lose",
+        title: rankTxt + " · " + title,
+        lines: ["내 수익률 " + pct(ret), vs,
                 "최고 기록 " + Math.max(ret, isFinite(best) ? best : ret).toFixed(1) + "%"],
         share: share,
         onRestart: reset
@@ -409,7 +445,7 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
     const tot = totalAssets();
     const ret = (tot / START_CASH - 1) * 100;
     const pl = tot - START_CASH;
-    const rr = rivalRet();
+    const rr = rivalRet(), pr = parkRet();
     const sumCls = ret > 0 ? "up" : ret < 0 ? "down" : "";
     document.getElementById("summary").innerHTML =
       "<div class='sum-label'>총자산</div>" +
@@ -418,7 +454,8 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
       "<div class='sum-row'>" +
       "<div><span>현금</span><b>" + fmt(cash) + "원</b></div>" +
       "<div><span>주식</span><b>" + fmt(tot - cash) + "원</b></div>" +
-      "<div><span>김부장</span><b class='" + (rr > 0 ? "up" : rr < 0 ? "down" : "") + "'>" + (rr >= 0 ? "+" : "") + rr.toFixed(1) + "%</b></div></div>";
+      "<div><span>김부장</span><b class='" + (rr > 0 ? "up" : rr < 0 ? "down" : "") + "'>" + (rr >= 0 ? "+" : "") + rr.toFixed(1) + "%</b></div>" +
+      "<div><span>박대리</span><b class='" + (pr > 0 ? "up" : pr < 0 ? "down" : "") + "'>" + (pr >= 0 ? "+" : "") + pr.toFixed(1) + "%</b></div></div>";
     const rg = document.getElementById("regime");
     rg.textContent = regime.label;
     rg.className = "regime " + regime.key;
@@ -475,10 +512,48 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
     bear: ["나는 어제 다 팔았어. 떨어지는 칼날은 잡는 게 아니야.", "이럴 때일수록 배당주가 효자라던데...", "괜찮아. 잃은 게 아니라 아직 안 판 것뿐이야."],
     rumor: ["그 소문 들었어? 난 못 들은 걸로 했어. ...아직은.", "소문에 사서 뉴스에 팔라던데, 지금이 소문 구간인가?"]
   };
+  const PARK_SVG = '<svg width="44" height="44" viewBox="0 0 48 48" aria-hidden="true" style="flex:none"><circle cx="24" cy="24" r="22" fill="#f3f1ea" stroke="#232220" stroke-width="1.5"/><path d="M10 22c0-9 6-15 14-15s14 6 14 15c-1.5-3-3-5-5-5.5 0 1.5-1.5 3-3.5 3s-3-2-4.5-2-2.5 2-4.5 2-4-.5-6 2.5z" fill="#232220"/><circle cx="17.5" cy="26" r="1.7" fill="#232220"/><circle cx="30.5" cy="26" r="1.7" fill="#232220"/><path d="M18.5 34c1.8 1.6 3.6 2.4 5.5 2.4s3.7-.8 5.5-2.4" fill="none" stroke="#232220" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  const PARK_QUIPS = [
+    "물타기 아니에요, 분할 매수예요.",
+    "떨어질 때 사는 거예요. 무서우면 평생 못 삽니다.",
+    "존버는 승리합니다. 아마도요.",
+    "차트요? 저는 마음의 눈으로 삽니다."
+  ];
+
+  function bestHolding(h) {
+    let bi = -1, bp = -Infinity;
+    for (let i = 0; i < STOCKS.length; i++) {
+      if (h[i].qty) {
+        const plp = cur(i) / h[i].avg - 1;
+        if (plp > bp) { bp = plp; bi = i; }
+      }
+    }
+    return { bi: bi, bp: bp };
+  }
+
   function kimQuip(events) {
+    const myRet = (totalAssets() / START_CASH - 1) * 100, rr = rivalRet();
+    const b = bestHolding(rHold);
+    const extra = [];
+    if (b.bi >= 0 && b.bp > 0.07) extra.push("내 " + STOCKS[b.bi].name + " 봤나? 평단 " + fmt(rHold[b.bi].avg) + "원에 +" + (b.bp * 100).toFixed(0) + "%야. 짬에서 나오는 바이브지.");
+    if (rr > myRet + 3) extra.push("내가 자네보다 " + (rr - myRet).toFixed(1) + "%p 앞서는구만. 점심은 자네가 사는 걸로.");
+    if (rr < myRet - 5) extra.push("이건 손실이 아니야. 비자발적 장기투자라고 하는 거지.");
+    if (extra.length && Math.random() < 0.6) return extra[Math.floor(Math.random() * extra.length)];
     const hasRumor = events.some(e => e.cls === "rumor");
     const pool = (hasRumor && Math.random() < 0.6) ? QUIPS.rumor : QUIPS[regime.key];
     return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  function parkQuip() {
+    const myRet = (totalAssets() / START_CASH - 1) * 100, pr = parkRet();
+    const b = bestHolding(pHold);
+    const extra = [];
+    if (b.bi >= 0 && b.bp > 0.07) extra.push("저 " + STOCKS[b.bi].name + " 평단 " + fmt(pHold[b.bi].avg) + "원인데 벌써 +" + (b.bp * 100).toFixed(0) + "%예요. 보고 계세요? ㅎㅎ");
+    if (b.bi >= 0 && b.bp < -0.12) extra.push(STOCKS[b.bi].name + "요? ...원래 장기 투자는 인내의 게임입니다.");
+    if (pr > myRet + 3) extra.push("어? 제 수익률이 더 높네요. 비결은 안 알려드립니다.");
+    if (pr > rivalRet() + 3) extra.push("부장님, 제가 부장님보다 잘 벌고 있는데요? 연차가 다는 아닌가 봐요.");
+    if (extra.length && Math.random() < 0.65) return extra[Math.floor(Math.random() * extra.length)];
+    return PARK_QUIPS[Math.floor(Math.random() * PARK_QUIPS.length)];
   }
 
   // ----- 순차 브리핑(보고) 시스템 -----
@@ -516,9 +591,10 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
       const chg = (cur(i) / prev(i) - 1) * 100;
       movers += "<div>" + s.name + " <span class='" + (chg >= 0 ? "up" : "down") + "'>" + (chg >= 0 ? "▲" : "▼") + Math.abs(chg).toFixed(1) + "%</span></div>";
     });
-    const ret = (totalAssets() / START_CASH - 1) * 100, rr = rivalRet();
+    const ret = (totalAssets() / START_CASH - 1) * 100, rr = rivalRet(), pr = parkRet();
+    const pct2 = v => (v >= 0 ? "+" : "") + v.toFixed(1) + "%";
     cards.push({ html: "<h2>" + label + " 개장 보고</h2>" +
-      "<div class='sub2'>" + regime.label + " · 내 수익률 " + (ret >= 0 ? "+" : "") + ret.toFixed(1) + "% · 김부장 " + (rr >= 0 ? "+" : "") + rr.toFixed(1) + "%</div>" +
+      "<div class='sub2'>" + regime.label + " · 나 " + pct2(ret) + " · 김부장 " + pct2(rr) + " · 박대리 " + pct2(pr) + "</div>" +
       "<div class='movers'>" + movers + "</div>" });
     events.forEach(e => {
       const tag = e.cls === "rumor" ? "<div class='tag rumor'>소문</div>" : "<div class='tag'>속보</div>";
@@ -526,7 +602,9 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
     });
     if (!finished && Math.random() < 0.35) cards.push({ challenge: makeChallenge() });
     cards.push({ html: "<div class='kim' style='border-top:none;padding-top:0;margin-top:4px'>" + KIM_SVG +
-      "<div><div class='who'>옆자리 김부장 (" + (rr >= 0 ? "+" : "") + rr.toFixed(1) + "%)</div><div class='bubble'>" + kimQuip(events) + "</div></div></div>" });
+      "<div><div class='who'>맞은편 김부장 (" + pct2(rr) + ")</div><div class='bubble'>" + kimQuip(events) + "</div></div></div>" +
+      "<div class='kim' style='border-top:none;padding-top:6px;margin-top:6px'>" + PARK_SVG +
+      "<div><div class='who'>옆자리 박대리 (" + pct2(pr) + ")</div><div class='bubble'>" + parkQuip() + "</div></div></div>" });
     return cards;
   }
 
