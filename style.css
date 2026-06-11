@@ -94,7 +94,6 @@ details.how summary::-webkit-details-marker { display: none; }
 details.how p { font-size: 14.5px; color: #4d4a43; }
 details.how h2 { font-size: 15px; margin: 18px 0 4px; }
 
-.ad-slot {
   margin: 40px auto 0; padding: 26px; text-align: center; color: #b6b2a6;
   border: 1px dashed var(--line-strong); border-radius: var(--radius); font-size: 12.5px;
   max-width: 728px; letter-spacing: .06em;
