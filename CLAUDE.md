@@ -6,7 +6,7 @@ All responses must be in **Korean (한글)**. Keep code and identifiers in Engli
 ## 프로젝트
 애드센스 수익화를 위한 한국어 퍼즐 게임 사이트.
 
-- 라이브: https://puzzlemaru.pages.dev (Cloudflare Pages, GitHub push 시 자동배포)
+- 라이브: https://puzzlemaru.xyz (Cloudflare Pages, GitHub push 시 자동배포. pages.dev 접속은 JS로 .xyz 리다이렉트)
 - 저장소: github.com/kcm0127-dotcom/puzzlemaru
 - 구성: 스도쿠(생성기+오늘의 퍼즐)·지뢰찾기·2048·오목(AI)·모의주식 + 게임별 공략, 블로그 글
 - 기술: 정적 HTML/JS/CSS, 빌드 도구 없음. 한/영 토글은 i18n.js
@@ -22,7 +22,7 @@ All responses must be in **Korean (한글)**. Keep code and identifiers in Engli
 ## SEO / 수익화
 - 구글 Search Console + 네이버 서치어드바이저 등록 완료 (2026-06-11), sitemap.xml 제출됨
 - 새 페이지 추가 시 sitemap.xml 갱신 필수
-- 애드센스는 도메인 구매 후 신청 (pages.dev로는 불가). ads.txt 존재
+- 애드센스는 puzzlemaru.xyz로 신청 가능. ads.txt 존재
 
 ## 주의
 - 샌드박스(Claude)에서 git 커밋 시 `.git/*.lock` 잠금 파일이 남아 실패할 수 있음 → 사용자 터미널에서 `rm -f .git/*.lock` 후 커밋/푸시

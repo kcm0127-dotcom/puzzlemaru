@@ -7,10 +7,13 @@
 - [ ] 커뮤니티 홍보 (홍보글 초안: 퍼즐마루-홍보글.md)
 - [ ] 연결고리 퍼즐 61일차부터 추가 작성 (현재 60개, ~2026-08-09 소진)
 - [ ] 데일리 게임 2종 사이트맵 재제출 (Search Console·네이버)
-- [ ] 도메인 구매
-- [ ] 애드센스 신청 (도메인 구매 후)
+- [ ] 애드센스 신청 (puzzlemaru.xyz로 가능)
+- [ ] Search Console·네이버에 puzzlemaru.xyz 속성 추가 + sitemap 제출 (pages.dev 속성은 유지하다가 .xyz 색인 안정화 후 정리)
 
 ## 완료
+
+- [x] 2026-06-11 도메인 puzzlemaru.xyz 구매·연결, 전 페이지 pages.dev→.xyz JS 리다이렉트 + canonical/og/sitemap/robots .xyz 통일 (404.html 스니펫 누락분 보강)
+- [x] 2026-06-11 구글 검색결과 파비콘 대응: favicon-96.png(96px)·favicon.ico(48px) 생성, 전 HTML에 PNG 아이콘 링크 추가 (구글 크롤러가 SVG 파비콘 인식 불안정)
 
 - [x] 2026-06-11 사무실 책상 배경 + 폰트 교체 + 게임별 전용 디자인 (style v9 · i18n v4)
   - 책상 컨셉: body 우드 텍스처, main을 책상 위 종이 문서 카드로 (모바일 여백 대응, 푸터 우드톤)
