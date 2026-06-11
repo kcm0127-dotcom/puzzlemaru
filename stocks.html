@@ -25,7 +25,7 @@
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 <style>
 #market { max-width: 640px; margin: 0 auto; }
 table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); border: 2px solid var(--text); overflow: hidden; box-shadow: 0 10px 28px rgba(35,34,32,.08); }
@@ -130,6 +130,11 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
   <p style="text-align:left"><button id="shareBtn" style="display:none">결과 복사하기</button></p>
 
   <div id="overlay"><div id="brief"></div></div>
+
+    <div class="kim-note">
+    <div data-kim="happy"></div>
+    <p><b>김부장</b> · 주식은 말이야, 무릎에 사서 어깨에 파는 거라네.</p>
+  </div>
 
   <details class="how">
   <summary>게임 방법 · 팁</summary>
@@ -690,6 +695,7 @@ table.mkt { width: 100%; border-collapse: collapse; background: var(--surface); 
   reset();
 })();
 </script>
+<script src="kim.js?v=2"></script>
 <script src="i18n.js?v=1"></script>
 </body>
 </html>

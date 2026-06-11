@@ -25,7 +25,7 @@
 <link rel="icon" href="favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 <style>
 #stage {
   position: relative; max-width: 420px; margin: 0 auto;
@@ -80,6 +80,11 @@
     <div id="tiles"></div>
   </div>
   <p class="msg" id="msg"></p>
+
+    <div class="kim-note">
+    <div data-kim="normal"></div>
+    <p><b>김부장</b> · 큰 타일은 구석에 모셔두게. 부장 자리처럼 말이야.</p>
+  </div>
 
   <details class="how">
   <summary>게임 방법 · 팁</summary>
@@ -320,6 +325,7 @@
   reset();
 })();
 </script>
+<script src="kim.js?v=2"></script>
 <script src="i18n.js?v=1"></script>
 </body>
 </html>

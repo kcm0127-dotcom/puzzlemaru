@@ -172,6 +172,12 @@ table.rule th { background: var(--surface); }
 .pm-row button { flex: 1; }
 
 
+/* 김부장 한마디 */
+.kim-note { display: flex; gap: 12px; align-items: center; max-width: 480px; margin: 26px auto 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.kim-note p { font-size: 13.5px; color: #4d4a43; margin: 0; }
+.kim-note b { color: var(--ink); }
+.kim-note > div:first-child { flex: none; }
+
 /* 홈 종목 카드 (세부 모드 내장형) */
 .fam-wrap { margin-top: 28px; }
 .fam2 { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
