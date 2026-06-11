@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace("https://puzzlemaru.xyz"+location.pathname+location.search);</script>
+<meta name="google-site-verification" content="qJrb2RbVZTgje-XaXWygP4cYyEMLFqKScbPZ5_QbVhk" />
+<meta name="naver-site-verification" content="3d9b2d6f2631e9f012be372bff5a87845dd4f225" />
+<meta name="google-site-verification" content="1Y8FATV2pnpzcQtXSazVYOD2g1D-5Fil9KC-PvCvXAo" />
+<meta name="naver-site-verification" content="c453a63eb21eed7ee1bade214294b2e5b7919832" />
+<meta name="google-adsense-account" content="ca-pub-6840959424010586">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840959424010586" crossorigin="anonymous"></script>
+<title>연결고리 — 오늘의 단어 묶기 퍼즐 (한국어 커넥션스) | 퍼즐마루</title>
+<meta name="description" content="16개의 단어를 공통점이 있는 4개씩 4그룹으로 묶는 데일리 단어 퍼즐. 매일 자정에 새 문제가 나오고 모두가 같은 문제를 풉니다. 한국어판 커넥션스.">
+<link rel="canonical" href="https://puzzlemaru.xyz/yeongyeol.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="연결고리 — 오늘의 단어 묶기 퍼즐 | 퍼즐마루">
+<meta property="og:description" content="16개의 단어를 공통점이 있는 4개씩 4그룹으로 묶는 데일리 단어 퍼즐. 매일 모두가 같은 문제를 풉니다.">
+<meta property="og:url" content="https://puzzlemaru.xyz/yeongyeol.html">
+<meta property="og:image" content="https://puzzlemaru.xyz/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="퍼즐마루">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
+<link rel="stylesheet" href="style.css?v=4">
+<style>
+#board { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+#solved { display: flex; flex-direction: column; gap: 8px; }
+.yg-bar { border-radius: 9px; padding: 10px 8px; text-align: center; color: #2e2a22; border: 1px solid rgba(35,34,32,.18); animation: ygIn .3s ease; }
+@keyframes ygIn { from { transform: scale(.92); opacity: 0; } }
+.yg-bar b { display: block; font-size: 15px; letter-spacing: -0.01em; }
+.yg-bar span { font-size: 13px; }
+#tiles16 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.yg-tile {
+  aspect-ratio: 1.55; border: 1px solid var(--line-strong); border-radius: 9px;
+  background: var(--surface); font-weight: 700; font-size: 15px; letter-spacing: -0.02em;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  padding: 2px; word-break: keep-all; line-height: 1.2; text-align: center;
+  transition: background .1s, transform .1s;
+}
+.yg-tile.sel { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.yg-tile.shake { animation: ygShake .35s; }
+@keyframes ygShake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.yg-tile.long { font-size: 12.5px; }
+#ygCtrl { display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+#lives { text-align: center; font-size: 14px; color: var(--muted); margin-top: 14px; }
+#lives i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin: 0 3px; font-style: normal; }
+#lives i.off { background: var(--line-strong); }
+.kim-note { display: flex; gap: 12px; align-items: center; max-width: 480px; margin: 26px auto 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.kim-note p { font-size: 13.5px; color: #4d4a43; margin: 0; }
+.kim-note b { color: var(--ink); }
+#msg { text-align: center; }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="nav-wrap">
+    <a class="logo" href="index.html">퍼즐<span>마루</span></a>
+    <nav class="main">
+      <a href="sudoku.html">스도쿠</a>
+      <a href="minesweeper.html">지뢰찾기</a>
+      <a href="2048.html">2048</a>
+      <a href="omok.html">오목</a>
+      <a href="yeongyeol.html" class="active">연결고리</a>
+      <a href="jidotle.html">지도틀</a>
+      <a href="stocks.html">모의주식</a>
+      <a href="guides.html">공략</a>
+      <a href="blog.html">읽을거리</a>
+    </nav>
+  </div>
+</header>
+<main class="game">
+  <div class="game-head">
+    <h1>연결고리 <span class="stat">#<b id="pno"></b></span></h1>
+    <div class="toolbar">
+      <span class="stat">연속 <b id="streak">0</b>일</span>
+    </div>
+  </div>
+  <p class="hint">공통점이 있는 단어 4개씩, 4개의 고리로 묶으세요. 매일 자정 새 문제.</p>
+
+  <div id="board">
+    <div id="solved"></div>
+    <div id="tiles16"></div>
+  </div>
+  <div id="ygCtrl">
+    <button id="shuffleBtn">섞기</button>
+    <button id="clearBtn">선택 해제</button>
+    <button class="primary" id="submitBtn" disabled>제출</button>
+  </div>
+  <div id="lives"></div>
+  <p class="msg" id="msg"></p>
+
+  <div class="kim-note">
+    <div id="kimFace"></div>
+    <p id="kimSay"><b>김부장</b> · 오늘도 점심시간에 한 판 했다네. 자네도 어디 한번 풀어보게.</p>
+  </div>
+
+  <details class="how">
+  <summary>게임 방법</summary>
+  <h2>연결고리 규칙</h2>
+  <p>16개의 단어에는 저마다 숨은 공통점이 있습니다. 4개씩 묶어 4개의 그룹을 모두 찾으면 성공. 단어를 4개 고른 뒤 '제출'을 누르세요. 틀릴 수 있는 횟수는 4번입니다.</p>
+  <p>그룹마다 난이도가 달라요. 노란색이 가장 쉽고, 보라색이 가장 까다롭습니다. 함정 단어에 주의하세요 — 두 그룹에 어울려 보이는 단어가 꼭 있습니다.</p>
+  <p>3개가 맞고 1개만 틀리면 "하나만 다르다"고 알려드립니다.</p>
+  </details>
+</main>
+<footer class="site">
+  <div><a href="index.html">홈</a> · <a href="about.html">소개·문의</a> · <a href="privacy.html">개인정보처리방침</a></div>
+  <div style="margin-top:8px">© 2026 퍼즐마루</div>
+</footer>
+<script src="confetti.js"></script>
+<script src="kim.js?v=1"></script>
+<script src="yeongyeol-data.js?v=1"></script>
+<script>
+(function () {
+  const COLORS = ["#e6c45c", "#94b873", "#84a3c8", "#ad8fc9"];
+  const SQUARES = ["🟨", "🟩", "🟦", "🟪"]; // 공유용 색 사각형
+  const EPOCH = Date.UTC(2026, 5, 11); // 2026-06-11 = #1
+
+  function kstNow() {
+    const d = new Date();
+    return new Date(d.getTime() + (9 * 60 + d.getTimezoneOffset()) * 60000);
+  }
+  const kst = kstNow();
+  const dayNum = Math.floor((Date.UTC(kst.getFullYear(), kst.getMonth(), kst.getDate()) - EPOCH) / 86400000);
+  const puzzleNo = dayNum + 1;
+  const puzzle = window.YEONGYEOL_PUZZLES[((dayNum % 60) + 60) % 60];
+  const dayKey = "yg-" + kst.getFullYear() + "-" + (kst.getMonth() + 1) + "-" + kst.getDate();
+  document.getElementById("pno").textContent = puzzleNo;
+  document.getElementById("kimFace").innerHTML = kimSVG("think", 64);
+
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  // 김부장의 오늘 기록 (날짜 고정)
+  const kimRng = mulberry32(dayNum * 7919 + 13);
+  const kimMiss = Math.floor(kimRng() * 6); // 0~5, 5면 실패
+
+  // 상태
+  let state = null;
+  try { state = JSON.parse(localStorage.getItem(dayKey)); } catch (e) {}
+  if (!state) state = { solved: [], mistakes: 0, hist: [], done: false, win: false };
+
+  // 타일 (그룹 인덱스 부여 후 섞기)
+  let items = [];
+  puzzle.g.forEach((grp, gi) => grp.w.forEach(w => items.push({ w, gi })));
+  const shufRng = mulberry32(dayNum * 31 + 7);
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(shufRng() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
+  }
+
+  let sel = [];
+  const tilesEl = document.getElementById("tiles16");
+  const solvedEl = document.getElementById("solved");
+  const msgEl = document.getElementById("msg");
+  const submitBtn = document.getElementById("submitBtn");
+
+  function save() { localStorage.setItem(dayKey, JSON.stringify(state)); }
+
+  function renderSolved() {
+    solvedEl.innerHTML = "";
+    state.solved.forEach(gi => {
+      const grp = puzzle.g[gi];
+      const div = document.createElement("div");
+      div.className = "yg-bar";
+      div.style.background = COLORS[gi];
+      div.innerHTML = "<b>" + grp.n + "</b><span>" + grp.w.join(" · ") + "</span>";
+      solvedEl.appendChild(div);
+    });
+  }
+
+  function renderTiles() {
+    tilesEl.innerHTML = "";
+    items.filter(it => !state.solved.includes(it.gi)).forEach(it => {
+      const b = document.createElement("button");
+      b.className = "yg-tile" + (it.w.length > 5 ? " long" : "") + (sel.includes(it.w) ? " sel" : "");
+      b.textContent = it.w;
+      b.addEventListener("click", () => {
+        if (state.done) return;
+        const i = sel.indexOf(it.w);
+        if (i >= 0) sel.splice(i, 1);
+        else if (sel.length < 4) sel.push(it.w);
+        renderTiles();
+      });
+      tilesEl.appendChild(b);
+    });
+    submitBtn.disabled = sel.length !== 4 || state.done;
+  }
+
+  function renderLives() {
+    let h = "남은 기회 ";
+    for (let i = 0; i < 4; i++) h += "<i" + (i < state.mistakes ? " class='off'" : "") + "></i>";
+    document.getElementById("lives").innerHTML = h;
+  }
+
+  function renderStats() {
+    let s = null;
+    try { s = JSON.parse(localStorage.getItem("yg-stats")); } catch (e) {}
+    document.getElementById("streak").textContent = s ? s.streak : 0;
+  }
+
+  function bumpStats(win) {
+    let s = null;
+    try { s = JSON.parse(localStorage.getItem("yg-stats")); } catch (e) {}
+    if (!s) s = { played: 0, wins: 0, streak: 0, last: -99 };
+    s.played++;
+    if (win) {
+      s.streak = (s.last === dayNum - 1) ? s.streak + 1 : 1;
+      s.wins++; s.last = dayNum;
+    } else { s.streak = 0; s.last = dayNum; }
+    localStorage.setItem("yg-stats", JSON.stringify(s));
+    renderStats();
+  }
+
+  function shareText() {
+    const rows = state.hist.map(h => h.map(gi => SQUARES[gi]).join("")).join("\n");
+    return "퍼즐마루 연결고리 #" + puzzleNo + (state.win ? " (실수 " + state.mistakes + ")" : " — 실패") +
+      "\n" + rows + "\nhttps://puzzlemaru.xyz/yeongyeol.html";
+  }
+
+  function kimLine() {
+    if (kimMiss >= 5) return "김부장은 오늘 못 풀고 퇴근했다네… 자네가 이겼군.";
+    if (kimMiss === 0) return "김부장은 오늘 실수 없이 통과! 어깨가 으쓱하군.";
+    return "김부장은 오늘 실수 " + kimMiss + "번으로 풀었다네.";
+  }
+
+  function finish(win) {
+    state.done = true; state.win = win;
+    save(); bumpStats(win);
+    const kimEl = document.getElementById("kimFace");
+    const sayEl = document.getElementById("kimSay");
+    if (win) {
+      const beat = kimMiss >= 5 || state.mistakes < kimMiss;
+      kimEl.innerHTML = kimSVG(beat ? "sad" : "happy", 64);
+      sayEl.innerHTML = "<b>김부장</b> · " + kimLine() + (beat ? " 분하군!" : "");
+      confettiBurst();
+      setTimeout(() => showGameOver({
+        kind: "win", title: "고리 완성!",
+        lines: ["실수 " + state.mistakes + "번", kimLine()],
+        share: shareText(),
+        onRestart: () => location.reload()
+      }), 700);
+    } else {
+      kimEl.innerHTML = kimSVG("happy", 64);
+      sayEl.innerHTML = "<b>김부장</b> · 허허, 내일 다시 도전하게. " + kimLine();
+      // 정답 공개
+      state.solved = [0, 1, 2, 3].filter(gi => state.solved.includes(gi))
+        .concat([0, 1, 2, 3].filter(gi => !state.solved.includes(gi)));
+      renderSolved(); renderTiles();
+      setTimeout(() => showGameOver({
+        kind: "lose", title: "기회 소진",
+        lines: ["맞힌 고리 " + state.hist.filter(h => new Set(h).size === 1).length + "개", kimLine()],
+        share: shareText(),
+        onRestart: () => location.reload()
+      }), 700);
+    }
+  }
+
+  function submit() {
+    if (sel.length !== 4 || state.done) return;
+    const gis = sel.map(w => items.find(it => it.w === w).gi);
+    state.hist.push(gis.slice());
+    const uniq = new Set(gis);
+    if (uniq.size === 1) {
+      state.solved.push(gis[0]);
+      sel = [];
+      msgEl.textContent = "";
+      msgEl.className = "msg";
+      renderSolved(); renderTiles(); save();
+      if (state.solved.length === 4) finish(true);
+    } else {
+      state.mistakes++;
+      renderLives();
+      document.querySelectorAll(".yg-tile.sel").forEach(t => t.classList.add("shake"));
+      const counts = {};
+      gis.forEach(gi => counts[gi] = (counts[gi] || 0) + 1);
+      msgEl.textContent = Math.max(...Object.values(counts)) === 3 ? "하나만 다릅니다!" : "다시 생각해 보세요.";
+      msgEl.className = "msg lose";
+      save();
+      if (state.mistakes >= 4) finish(false);
+    }
+  }
+
+  document.getElementById("submitBtn").addEventListener("click", submit);
+  document.getElementById("clearBtn").addEventListener("click", () => { sel = []; renderTiles(); });
+  document.getElementById("shuffleBtn").addEventListener("click", () => {
+    for (let i = items.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [items[i], items[j]] = [items[j], items[i]];
+    }
+    renderTiles();
+  });
+
+  renderSolved(); renderTiles(); renderLives(); renderStats();
+  if (state.done) {
+    msgEl.textContent = state.win ? "오늘 퍼즐을 풀었습니다. 내일 자정에 새 문제가 나와요." : "오늘은 끝! 내일 다시 도전하세요.";
+    msgEl.className = "msg " + (state.win ? "win" : "lose");
+    if (!state.win) { state.solved = [0,1,2,3]; renderSolved(); renderTiles(); }
+    document.getElementById("kimSay").innerHTML = "<b>김부장</b> · " + kimLine();
+    document.getElementById("kimFace").innerHTML = kimSVG(state.win ? "sad" : "happy", 64);
+  }
+})();
+</script>
+<script src="i18n.js?v=1"></script>
+</body>
+</html>

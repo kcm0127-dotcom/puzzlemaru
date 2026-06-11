@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace("https://puzzlemaru.xyz"+location.pathname+location.search);</script>
+<meta name="google-site-verification" content="qJrb2RbVZTgje-XaXWygP4cYyEMLFqKScbPZ5_QbVhk" />
+<meta name="naver-site-verification" content="3d9b2d6f2631e9f012be372bff5a87845dd4f225" />
+<meta name="google-site-verification" content="1Y8FATV2pnpzcQtXSazVYOD2g1D-5Fil9KC-PvCvXAo" />
+<meta name="naver-site-verification" content="c453a63eb21eed7ee1bade214294b2e5b7919832" />
+<meta name="google-adsense-account" content="ca-pub-6840959424010586">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840959424010586" crossorigin="anonymous"></script>
+<title>지도틀 — 오늘의 나라 맞히기 퍼즐 (한국어 월들) | 퍼즐마루</title>
+<meta name="description" content="나라의 실루엣만 보고 어느 나라인지 맞히는 데일리 지리 퍼즐. 틀려도 거리와 방향 힌트가 나옵니다. 매일 자정 새 나라, 모두가 같은 문제. 한국어판 Worldle.">
+<link rel="canonical" href="https://puzzlemaru.xyz/jidotle.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="지도틀 — 오늘의 나라 맞히기 퍼즐 | 퍼즐마루">
+<meta property="og:description" content="나라의 실루엣만 보고 어느 나라인지 맞히는 데일리 지리 퍼즐. 거리·방향 힌트 제공.">
+<meta property="og:url" content="https://puzzlemaru.xyz/jidotle.html">
+<meta property="og:image" content="https://puzzlemaru.xyz/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="퍼즐마루">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
+<link rel="stylesheet" href="style.css?v=4">
+<style>
+#jdWrap { max-width: 480px; margin: 0 auto; }
+#shape { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 14px; padding: 8px; }
+#shape svg { display: block; width: 100%; height: auto; }
+#shape path { fill: var(--ink); }
+#guesses { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+.jd-row {
+  display: grid; grid-template-columns: 1fr 76px 34px 52px; gap: 6px; align-items: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px 12px; font-size: 14px; font-weight: 600; animation: jdIn .25s ease;
+}
+@keyframes jdIn { from { transform: translateY(-4px); opacity: 0; } }
+.jd-row .dist { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 500; }
+.jd-row .dir svg { display: block; margin: 0 auto; color: var(--accent); }
+.jd-row .pct { text-align: right; font-variant-numeric: tabular-nums; }
+.jd-row.hit { border-color: var(--success); background: #eef3ec; }
+.jd-row.hit .pct { color: var(--success); }
+.jd-row.empty { border-style: dashed; min-height: 38px; animation: none; }
+#inputWrap { position: relative; margin-top: 14px; display: flex; gap: 8px; }
+#countryInput {
+  flex: 1; font: inherit; font-size: 15px; padding: 10px 14px;
+  border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface); color: var(--ink);
+}
+#countryInput:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+#suggest {
+  position: absolute; bottom: calc(100% + 4px); left: 0; right: 0; z-index: 30;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px;
+  max-height: 216px; overflow-y: auto; box-shadow: 0 10px 26px rgba(35,34,32,.14); display: none;
+}
+#suggest div { padding: 9px 14px; font-size: 14.5px; cursor: pointer; }
+#suggest div:hover, #suggest div.hl { background: var(--accent-soft); }
+.kim-note { display: flex; gap: 12px; align-items: center; max-width: 480px; margin: 26px auto 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.kim-note p { font-size: 13.5px; color: #4d4a43; margin: 0; }
+.kim-note b { color: var(--ink); }
+#msg { text-align: center; }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="nav-wrap">
+    <a class="logo" href="index.html">퍼즐<span>마루</span></a>
+    <nav class="main">
+      <a href="sudoku.html">스도쿠</a>
+      <a href="minesweeper.html">지뢰찾기</a>
+      <a href="2048.html">2048</a>
+      <a href="omok.html">오목</a>
+      <a href="yeongyeol.html">연결고리</a>
+      <a href="jidotle.html" class="active">지도틀</a>
+      <a href="stocks.html">모의주식</a>
+      <a href="guides.html">공략</a>
+      <a href="blog.html">읽을거리</a>
+    </nav>
+  </div>
+</header>
+<main class="game">
+  <div class="game-head">
+    <h1>지도틀 <span class="stat">#<b id="pno"></b></span></h1>
+    <div class="toolbar">
+      <span class="stat">연속 <b id="streak">0</b>일</span>
+    </div>
+  </div>
+  <p class="hint">실루엣만 보고 어느 나라인지 맞히세요. 6번의 기회, 틀리면 거리·방향 힌트.</p>
+
+  <div id="jdWrap">
+    <div id="shape"></div>
+    <div id="guesses"></div>
+    <div id="inputWrap">
+      <div id="suggest"></div>
+      <input id="countryInput" type="text" placeholder="나라 이름 입력" autocomplete="off">
+      <button class="primary" id="guessBtn">추측</button>
+    </div>
+  </div>
+  <p class="msg" id="msg"></p>
+
+  <div class="kim-note">
+    <div id="kimFace"></div>
+    <p id="kimSay"><b>김부장</b> · 세계지도 좀 본 사람은 모양만 봐도 안다네. 험험.</p>
+  </div>
+
+  <details class="how">
+  <summary>게임 방법</summary>
+  <h2>지도틀 규칙</h2>
+  <p>매일 자정, 새로운 나라의 실루엣이 공개됩니다. 나라 이름을 입력해 6번 안에 맞히세요.</p>
+  <p>틀리면 그 나라에서 정답 나라까지의 <b>거리(km)</b>, <b>방향 화살표</b>, 그리고 <b>근접도(%)</b>가 표시됩니다. 100%에 가까울수록 정답에 가까운 나라입니다.</p>
+  <p>예를 들어 정답이 일본인데 '프랑스'를 냈다면, 화살표는 동쪽을 가리키고 거리는 약 9,700km로 표시됩니다.</p>
+  </details>
+</main>
+<footer class="site">
+  <div><a href="index.html">홈</a> · <a href="about.html">소개·문의</a> · <a href="privacy.html">개인정보처리방침</a></div>
+  <div style="margin-top:8px">© 2026 퍼즐마루</div>
+</footer>
+<script src="confetti.js"></script>
+<script src="kim.js?v=1"></script>
+<script src="jidotle-data.js?v=1"></script>
+<script>
+(function () {
+  const C = window.JIDOTLE_COUNTRIES;
+  const MAXG = 6;
+  const EPOCH = Date.UTC(2026, 5, 11);
+
+  const d = new Date();
+  const kst = new Date(d.getTime() + (9 * 60 + d.getTimezoneOffset()) * 60000);
+  const dayNum = Math.floor((Date.UTC(kst.getFullYear(), kst.getMonth(), kst.getDate()) - EPOCH) / 86400000);
+  const puzzleNo = dayNum + 1;
+  const dayKey = "jd-" + kst.getFullYear() + "-" + (kst.getMonth() + 1) + "-" + kst.getDate();
+  document.getElementById("pno").textContent = puzzleNo;
+  document.getElementById("kimFace").innerHTML = kimSVG("think", 64);
+
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  // 고정 시드로 전체 순서를 섞어 두고 날짜로 순환 → 한 바퀴 돌 때까지 중복 없음
+  const order = C.map((_, i) => i);
+  const permRng = mulberry32(20260611);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(permRng() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  const answer = C[order[((dayNum % C.length) + C.length) % C.length]];
+
+  // 실루엣
+  document.getElementById("shape").innerHTML =
+    '<svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg"><path d="' + answer.d + '"/></svg>';
+
+  // 이름 검색 색인
+  const norm = s => s.replace(/\s/g, "").toLowerCase();
+  const index = [];
+  C.forEach(c => {
+    index.push({ key: norm(c.ko), c });
+    (c.alts || []).forEach(a => index.push({ key: norm(a), c }));
+  });
+
+  function dist(a, b) { // haversine, km
+    const R = 6371, r = Math.PI / 180;
+    const dLat = (b.lat - a.lat) * r, dLon = (b.lon - a.lon) * r;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLon / 2) ** 2;
+    return Math.round(2 * R * Math.asin(Math.sqrt(h)));
+  }
+  function bearing(a, b) { // 도(0=북)
+    const r = Math.PI / 180;
+    const y = Math.sin((b.lon - a.lon) * r) * Math.cos(b.lat * r);
+    const x = Math.cos(a.lat * r) * Math.sin(b.lat * r) - Math.sin(a.lat * r) * Math.cos(b.lat * r) * Math.cos((b.lon - a.lon) * r);
+    return ((Math.atan2(y, x) / r) + 360) % 360;
+  }
+  const arrowSVG = deg =>
+    '<svg width="18" height="18" viewBox="0 0 24 24" style="transform:rotate(' + deg + 'deg)" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+
+  let state = null;
+  try { state = JSON.parse(localStorage.getItem(dayKey)); } catch (e) {}
+  if (!state) state = { guesses: [], done: false, win: false };
+
+  const guessesEl = document.getElementById("guesses");
+  const msgEl = document.getElementById("msg");
+  const input = document.getElementById("countryInput");
+  const suggest = document.getElementById("suggest");
+
+  // 김부장의 오늘 기록
+  const kimRng = mulberry32(dayNum * 6151 + 3);
+  const kimTry = 1 + Math.floor(kimRng() * 7); // 1~7, 7이면 실패
+  function kimLine() {
+    if (kimTry >= 7) return "김부장은 오늘 못 맞히고 지도책만 뒤졌다네…";
+    return "김부장은 오늘 " + kimTry + "번 만에 맞혔다네.";
+  }
+
+  function render() {
+    guessesEl.innerHTML = "";
+    state.guesses.forEach(g => {
+      const row = document.createElement("div");
+      row.className = "jd-row" + (g.hit ? " hit" : "");
+      row.innerHTML = "<span>" + g.name + "</span>" +
+        "<span class='dist'>" + (g.hit ? "정답!" : g.km.toLocaleString() + "km") + "</span>" +
+        "<span class='dir'>" + (g.hit ? "" : arrowSVG(g.deg)) + "</span>" +
+        "<span class='pct'>" + g.pct + "%</span>";
+      guessesEl.appendChild(row);
+    });
+    for (let i = state.guesses.length; i < MAXG; i++) {
+      const row = document.createElement("div");
+      row.className = "jd-row empty";
+      guessesEl.appendChild(row);
+    }
+  }
+
+  function renderStats() {
+    let s = null;
+    try { s = JSON.parse(localStorage.getItem("jd-stats")); } catch (e) {}
+    document.getElementById("streak").textContent = s ? s.streak : 0;
+  }
+  function bumpStats(win) {
+    let s = null;
+    try { s = JSON.parse(localStorage.getItem("jd-stats")); } catch (e) {}
+    if (!s) s = { played: 0, wins: 0, streak: 0, last: -99 };
+    s.played++;
+    if (win) { s.streak = (s.last === dayNum - 1) ? s.streak + 1 : 1; s.wins++; s.last = dayNum; }
+    else { s.streak = 0; s.last = dayNum; }
+    localStorage.setItem("jd-stats", JSON.stringify(s));
+    renderStats();
+  }
+
+  function shareText() {
+    const rows = state.guesses.map(g => {
+      const n = Math.round(g.pct / 20); // 0~5칸
+      return "🟩".repeat(n) + "⬜".repeat(5 - n) + " " + g.pct + "%";
+    }).join("\n");
+    return "퍼즐마루 지도틀 #" + puzzleNo + " " + (state.win ? state.guesses.length + "/6" : "X/6") +
+      "\n" + rows + "\nhttps://puzzlemaru.xyz/jidotle.html";
+  }
+
+  function lockInput() {
+    input.disabled = true;
+    document.getElementById("guessBtn").disabled = true;
+  }
+
+  function finish(win) {
+    state.done = true; state.win = win;
+    localStorage.setItem(dayKey, JSON.stringify(state));
+    bumpStats(win); lockInput();
+    const kimEl = document.getElementById("kimFace");
+    const sayEl = document.getElementById("kimSay");
+    const beat = win && (kimTry >= 7 || state.guesses.length < kimTry);
+    if (win) {
+      kimEl.innerHTML = kimSVG(beat ? "sad" : "happy", 64);
+      sayEl.innerHTML = "<b>김부장</b> · " + kimLine() + (beat ? " 자네 제법이군!" : "");
+      confettiBurst();
+      setTimeout(() => showGameOver({
+        kind: "win", title: answer.ko + " 정답!",
+        lines: [state.guesses.length + "번 만에 성공", kimLine()],
+        share: shareText(),
+        onRestart: () => location.reload()
+      }), 700);
+    } else {
+      kimEl.innerHTML = kimSVG("happy", 64);
+      sayEl.innerHTML = "<b>김부장</b> · 정답은 <b>" + answer.ko + "</b>였다네. " + kimLine();
+      setTimeout(() => showGameOver({
+        kind: "lose", title: "정답: " + answer.ko,
+        lines: ["내일 다시 도전하세요", kimLine()],
+        share: shareText(),
+        onRestart: () => location.reload()
+      }), 700);
+    }
+    msgEl.textContent = win ? "정답: " + answer.ko : "정답은 " + answer.ko + "였습니다.";
+    msgEl.className = "msg " + (win ? "win" : "lose");
+  }
+
+  function guess(c) {
+    if (state.done) return;
+    if (state.guesses.some(g => g.name === c.ko)) {
+      msgEl.textContent = "이미 추측한 나라입니다.";
+      msgEl.className = "msg lose";
+      return;
+    }
+    msgEl.textContent = ""; msgEl.className = "msg";
+    const hit = c.ko === answer.ko;
+    const km = dist(c, answer);
+    const pct = hit ? 100 : Math.max(0, Math.round(100 - km / 200)); // 20000km 기준
+    state.guesses.push({ name: c.ko, km, deg: Math.round(bearing(c, answer)), pct, hit });
+    localStorage.setItem(dayKey, JSON.stringify(state));
+    render();
+    input.value = ""; hideSuggest();
+    if (hit) finish(true);
+    else if (state.guesses.length >= MAXG) finish(false);
+  }
+
+  // 자동완성
+  let hl = -1, matches = [];
+  function hideSuggest() { suggest.style.display = "none"; hl = -1; }
+  function showSuggest() {
+    const q = norm(input.value);
+    if (!q) { hideSuggest(); return; }
+    const seen = new Set();
+    matches = [];
+    index.forEach(e => {
+      if (e.key.includes(q) && !seen.has(e.c.ko)) { seen.add(e.c.ko); matches.push(e.c); }
+    });
+    matches = matches.slice(0, 8);
+    if (!matches.length) { hideSuggest(); return; }
+    suggest.innerHTML = "";
+    matches.forEach((c, i) => {
+      const div = document.createElement("div");
+      div.textContent = c.ko;
+      div.addEventListener("mousedown", e => { e.preventDefault(); guess(c); });
+      suggest.appendChild(div);
+    });
+    suggest.style.display = "block"; hl = -1;
+  }
+  input.addEventListener("input", showSuggest);
+  input.addEventListener("blur", () => setTimeout(hideSuggest, 120));
+  input.addEventListener("keydown", e => {
+    const items = suggest.children;
+    if (e.key === "ArrowDown" && items.length) { hl = (hl + 1) % items.length; mark(); e.preventDefault(); }
+    else if (e.key === "ArrowUp" && items.length) { hl = (hl - 1 + items.length) % items.length; mark(); e.preventDefault(); }
+    else if (e.key === "Enter") { e.preventDefault(); submitTyped(); }
+    function mark() { [...items].forEach((el, i) => el.classList.toggle("hl", i === hl)); }
+  });
+  function submitTyped() {
+    if (hl >= 0 && matches[hl]) { guess(matches[hl]); return; }
+    const q = norm(input.value);
+    if (!q) return;
+    const exact = index.find(e => e.key === q);
+    if (exact) guess(exact.c);
+    else if (matches.length === 1) guess(matches[0]);
+    else { msgEl.textContent = "목록에서 나라를 선택해 주세요."; msgEl.className = "msg lose"; }
+  }
+  document.getElementById("guessBtn").addEventListener("click", submitTyped);
+
+  render(); renderStats();
+  if (state.done) {
+    lockInput();
+    msgEl.textContent = state.win ? "오늘 퍼즐 완료! 정답: " + answer.ko : "정답은 " + answer.ko + "였습니다. 내일 새 나라가 나와요.";
+    msgEl.className = "msg " + (state.win ? "win" : "lose");
+    document.getElementById("kimSay").innerHTML = "<b>김부장</b> · " + kimLine();
+  }
+})();
+</script>
+<script src="i18n.js?v=1"></script>
+</body>
+</html>

@@ -52,6 +52,13 @@
     "오리지널": "Original",
     "퍼즐마루 오리지널": "Puzzlemaru Original",
     "퍼즐마루는": "About Puzzlemaru",
+    /* 데일리 게임 */
+    "연결고리": "Word Links", "지도틀": "Mapdle",
+    "오늘의 퍼즐": "Daily Puzzles",
+    "매일 자정 새 문제, 모두에게 같은 문제": "New puzzle at midnight, same for everyone",
+    "단어 16개를 4그룹으로 묶기": "Group 16 words into 4 sets",
+    "실루엣만 보고 나라 맞히기": "Guess the country by its silhouette",
+    "김부장을 소개합니다": "Meet Mr. Kim",
     /* 공통 버튼 · 툴바 */
     "새 게임": "New Game", "무르기": "Undo", "힌트": "Hint", "팁": "Tip",
     "메모": "Notes", "지우기": "Erase", "다시 하기": "Play Again", "닫기": "Close",
